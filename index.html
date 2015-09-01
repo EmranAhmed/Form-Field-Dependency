@@ -53,7 +53,7 @@
 &lt;/div&gt;
 </pre>
 
-<h3>Activate plugin</h3>
+            <h3>Activate plugin</h3>
 
 <pre>
 jQuery(function ($) {
@@ -61,7 +61,7 @@ jQuery(function ($) {
 });
 </pre>
 
-<h3>Add a simple css</h3>
+            <h3>Add a simple css</h3>
 
 <pre>
 [data-depends]{
@@ -70,15 +70,43 @@ jQuery(function ($) {
 </pre>
 
 
-<h3>Add your field rule.</h3>
-<p>Field rule should write in <code>data-depends</code> attribute value should JSON data.</p>
+            <h3>Add your field rule.</h3>
+
+            <p>You can write your field rule globally or on fly. Field rule should written by JSON data.</p>
+
+            <h4>Example: Globally defined like</h4>
 <pre>
-&lt;div class="form-group" data-depends="{'#InputEmail':{'type':'equal', 'value':'lorem'}}"&gt;
+$('[data-depends]').formFieldDependency({
+
+'rules'     : {
+            '#only-email' : {
+                '#InputEmail' : {'type' : 'regexp', 'pattern' : '[a-z]+@[a-z]+.[a-z]', 'modifier' : 'i'}
+            },
+            '#only-equal' :
+            {
+                '#InputEmail' : {'type' : 'equal', 'value' : ['lorem', 'ipsum']}
+            }
+        }
+    });
+</pre>
+            <h4>Or Like: </h4>
+<pre>
+$.fn.formFieldDependency({
+        'attribute' : 'data-depends',
+        'rules'     : {
+            '#only-email' : {
+                '#InputEmail' : {'type' : 'regexp', 'pattern' : '[a-z]+@[a-z]+.[a-z]', 'modifier' : 'i'}
+            },
+            '#only-equal' :
+            {
+                '#InputEmail' : {'type' : 'equal', 'value' : ['lorem', 'ipsum']}
+            }
+        }
+    });
 </pre>
 
 
-
-</section>
+        </section>
 
         <footer>
             Form-field-dependency is maintained by <a href="https://github.com/EmranAhmed">Emran Ahmed</a><br>. Tactile
