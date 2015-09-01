@@ -3,6 +3,6 @@ body{
     margin: 20px auto;
     }
 
-[data-depends]{
-    display:none
+[data-depends], .dependency-field{
+    display: none;
     }

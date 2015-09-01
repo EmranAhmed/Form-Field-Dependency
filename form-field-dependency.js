@@ -1,25 +1,28 @@
 (function ($) {
 
     $.fn.formFieldDependency = function (options) {
+        
+        var settings = $.extend({
+            'attribute' : 'data-depends',
+            'rules'     : {}
+        }, options);
 
 
-        var settings = $.extend({}, options);
-
-
-        var arrayInArraysHelper = function (needles, haystack, strict) {
+        var arrayInArraysHelper = function (needleArray, haystackArray, strict) {
 
             if (typeof strict == 'undefined') {
                 strict = false;
             }
 
             if (strict == true) {
-                if( (needles.sort().join(',').toLowerCase()) == (haystack.sort().join(',').toLowerCase())) {
+                if ((needleArray.sort().join(',').toLowerCase()) == (haystackArray.sort().join(',').toLowerCase())) {
                     return true;
                 }
                 return false;
-            } else {
-                for (i = 0; i < needles.length; i++) {
-                    if (haystack.indexOf(needles[i]) > -1) {
+            }
+            else {
+                for (i = 0; i < needleArray.length; i++) {
+                    if (haystackArray.indexOf(needleArray[i]) >= 0) {
                         return true;
                     }
                 }
@@ -27,15 +30,18 @@
             }
         };
 
-        var stringInArraysHelper = function (needles, haystack) {
+        var stringInArraysHelper = function (needleString, haystackArray) {
 
-
-            if ($.inArray(needles, haystack) >= 0) {
+            if (($.inArray(needleString, haystackArray) >= 0) && isArray(haystackArray) ) {
                 return true;
             }
             else {
                 return false;
             }
+        };
+
+        var isArray = function(value){
+            return value instanceof Array;
         };
 
         var selectFn = function (element, selector, expected_value) {
@@ -92,10 +98,10 @@
                 case "input:tel":
                 case "textarea:textarea":
 
-                    var modifier = ( typeof depObject.modifier=='undefined' ) ? '': depObject.modifier;
-                    var pattern = new RegExp( depObject.pattern, modifier );
+                    var modifier = ( typeof depObject.modifier == 'undefined' ) ? '' : depObject.modifier;
+                    var pattern = new RegExp(depObject.pattern, modifier);
 
-                    if ( pattern.test(value) ) {
+                    if (pattern.test(value)) {
                         $(element).show();
                     }
                     else {
@@ -112,7 +118,6 @@
             }
         };
 
-
         /**
          * For empty TextBox
          * @param element
@@ -121,6 +126,9 @@
          * @param useEvent
          */
         var typeEmptyDependency = function (element, depObject, parent, useEvent) {
+
+
+
 
             if (typeof useEvent == 'undefined') {
                 useEvent = false;
@@ -165,7 +173,6 @@
                 });
             }
         };
-
 
         /**
          * For non empty TextBox
@@ -219,7 +226,6 @@
             }
         };
 
-
         /**
          * TextBox value matched with value or with array values
          * @param element
@@ -232,6 +238,7 @@
             if (typeof useEvent == 'undefined') {
                 useEvent = false;
             }
+
             var tag = $(parent).prop("tagName").toLowerCase();
             var type = $(parent).prop("type").toLowerCase();
             var name = tag + ':' + type;
@@ -247,7 +254,7 @@
                 case "input:tel":
                 case "textarea:textarea":
 
-                    if (value == depObject.value) {
+                    if ($.trim(value) == depObject.value) {
                         $(element).show();
                     }
                     else if (stringInArraysHelper(value, depObject.value)) {
@@ -297,7 +304,6 @@
             }
 
         };
-
 
         /**
          * TextBox value not equal with value or with array values
@@ -378,12 +384,7 @@
             }
         };
 
-
-        return this.each(function () {
-
-            $el = $(this);
-            $data = JSON.parse($(this).data('depends').replace(/'/g, '"'));
-
+        var useTypes = function($el, $data){
             $.each($data, function (selector, depObject) {
 
                 switch (depObject.type) {
@@ -419,15 +420,21 @@
                         typeRegExpDependency($el, depObject, selector, true);
                         break;
 
-
                 }
             });
+        };
+        var useRules = function($data){
+
+            $.each($data, function ($el, depObject) {
+                useTypes($($el), depObject);
+            });
+        };
+
+        useRules(settings.rules);
+
+        return this.each(function () {
+            $data = JSON.parse($(this).attr(settings.attribute).replace(/'/g, '"'));
+            useTypes($(this), $data);
         });
     }
 })(jQuery);
-
-jQuery(function ($) {
-
-    $('[data-depends]').formFieldDependency();
-
-});

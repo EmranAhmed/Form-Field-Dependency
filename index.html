@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="style.css"/>
     <script src="jquery.min.js"></script>
     <script src="form-field-dependency.js"></script>
+    <script src="script.js"></script>
 </head>
 <body>
 
@@ -20,12 +21,12 @@
                     <input type="text" class="form-control" id="InputEmail" placeholder="Email">
                 </div>
 
-                <div class="form-group" data-depends="{'#InputEmail':{'type':'regexp', 'pattern':'[a-z]+@[a-z]+.[a-z]', 'modifier':'i'}}">
+                <div class="form-group dependency-field" id="only-email" data-depends="{'#InputEmail':{'type':'regexp', 'pattern':'[a-z]+@[a-z]+.[a-z]', 'modifier':'i'}}">
                     <label for="InputValidRegExpString">Will Show On Email address is valid.</label>
                     <input type="text" class="form-control" id="InputValidRegExpString" placeholder="">
                 </div>
 
-                <div class="form-group" data-depends="{'#InputEmail':{'type':'equal', 'value':'lorem'}}">
+                <div class="form-group dependency-field" id="only-equal" data-depends="{'#InputEmail':{'type':'equal', 'value':'lorem'}}">
                     <label for="InputNonArrayString">Will Show On Email field filledUp with 'lorem'. Non Array</label>
                     <input type="text" class="form-control" id="InputNonArrayString" placeholder="">
                 </div>
@@ -44,8 +45,6 @@
                     <label for="InputEmpty">Will Hide On Email field filled Up</label>
                     <input type="text" class="form-control" id="InputEmpty" placeholder="">
                 </div>
-
-
 
 
 
@@ -193,6 +192,8 @@
                    '#exampleInputEmail3' : {'type':'equal', 'value':'b'},
                    '#exampleInputEmail3' : {'type':'equal', 'value':['a', 'b', 'c']},
                    '#exampleInputEmail3' : {'type':'equal', 'value':['a', 'b', 'c'], 'strict':true},
+
+                   '#exampleInputEmail3' : {'type':'equal', 'like':'#exampleInputEmail4', 'strict':true},
 
                    '#exampleInputEmail3' : {'type':'!equal', 'value':'a'},
                    '#exampleInputEmail3' : {'type':'!equal', 'value':['a', 'b', 'c']},
