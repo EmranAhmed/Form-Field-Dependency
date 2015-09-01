@@ -47,6 +47,21 @@
                 </div>
 
 
+                <div class="form-group">
+                    <label for="InputEmailEq1">Equal 1:</label>
+                    <input type="text" class="form-control" id="InputEmailEq1" placeholder="Email">
+                </div>
+
+                <div class="form-group">
+                    <label for="InputEmailEq2">Equal 2:</label>
+                    <input type="text" class="form-control" id="InputEmailEq2" placeholder="Another Email">
+                </div>
+
+                <div class="form-group" data-depends="{'#InputEmailEq1':{'type':'equal', 'like':'#InputEmailEq2', 'empty':false}}">
+                    <label for="InputEmailEqsame">Will show when Equal1 value same as Equal2 value :</label>
+                    <input type="text" class="form-control" id="InputEmailEqsame" placeholder="Another Email">
+                </div>
+
 
                 <div class="form-group">
                     <label for="InputAddress">Address:</label>
@@ -68,15 +83,52 @@
                     </select>
                 </div>
 
+                <div class="form-group" data-depends="{'#InputSelectOne':{'type':'empty'}}">
+                    <label for="InputSelectOneEmpty">Will Show on Select One Empty</label>
+                    <input type="text" class="form-control" id="InputSelectOneEmpty" placeholder="">
+                </div>
+
                 <div class="form-group">
                     <label for="InputSelectMulti">Select Multi:</label>
                     <select id="InputSelectMulti" multiple="multiple" class="form-control">
-                        <option value="">Select</option>
                         <option value="1">One</option>
                         <option value="2">Two</option>
                         <option value="three">Three</option>
                     </select>
                 </div>
+
+                <div class="form-group system1">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" class="system-checkboxes" id="inlineCheckboxs1" value="option1"> System 1
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" class="system-checkboxes" id="inlineCheckboxs2" value="option2"> System 2
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" class="system-checkboxes" id="inlineCheckboxs3" value="option3"> System 3
+                    </label>
+                </div>
+
+                <div class="form-group system2">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" class="style-checkboxes" id="inlineCheckboxs4" value="option1"> Style 1
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" class="style-checkboxes" id="inlineCheckboxs5" value="option2"> Style 2
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" class="style-checkboxes" id="inlineCheckboxs6" value="option3"> Style 3
+                    </label>
+                </div>
+
+
+
+                <div class="form-group" data-depends="{'input.style-checkboxes':{'type':'!equal', 'like':'input.system-checkboxes'}}">
+                    <label for="InputSystemStyleEqual">Will Show when System Not Equals Style</label>
+                    <input type="text" class="form-control" id="InputSystemStyleEqual" placeholder="">
+                </div>
+
+
 
                 <div class="form-group checkboxes">
                     <label class="checkbox-inline">
@@ -131,8 +183,6 @@
                     <input type="text" class="form-control" id="InputCheckBoxNotEqualArrayStrict" placeholder="">
                 </div>
 
-
-
                 <div class="form-group radios">
                     <label class="radio-inline">
                         <input type="radio" class="radios" name="inlineRadioOptions" id="inlineRadio1" value="option1"> 1
@@ -144,7 +194,6 @@
                         <input type="radio" class="radios" name="inlineRadioOptions" id="inlineRadio3" value="option3"> 3
                     </label>
                 </div>
-
 
                 <div class="form-group" data-depends="{'input.radios':{'type':'empty'}}">
                     <label for="InputRadioEmpty">Will Show on Radio (1 | 2 | 3) NOT checked</label>
@@ -193,21 +242,13 @@
                    '#exampleInputEmail3' : {'type':'equal', 'value':['a', 'b', 'c']},
                    '#exampleInputEmail3' : {'type':'equal', 'value':['a', 'b', 'c'], 'strict':true},
 
-                   '#exampleInputEmail3' : {'type':'equal', 'like':'#exampleInputEmail4', 'strict':true},
+                   '#exampleInputEmail3' : {'type':'equal', 'like':'#exampleInputEmail4', 'strict':true, 'empty':true},
 
                    '#exampleInputEmail3' : {'type':'!equal', 'value':'a'},
                    '#exampleInputEmail3' : {'type':'!equal', 'value':['a', 'b', 'c']},
 
                    '#exampleInputEmail3' : {'type':'regexp', 'pattern':'[a-z]+@[a-z]+.[a-z]+', 'modifier':'gi'},
 
-
-
-
-
-
-
-
-                   '#exampleInputEmail3' : {'type':'like', 'as':'#exampleInputEmail4'},
 
 
 

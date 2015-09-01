@@ -90,7 +90,7 @@
                 }
             }
         };
-        
+
         /**
          * For Regular Expression Dependency
          * @param element
@@ -264,6 +264,34 @@
             var name = tag + ':' + type;
             var value = $(parent).val();
 
+            var equalLike = (typeof depObject.like=='undefined') ? false : true;
+
+            if( equalLike ){
+
+                // Allow when both have empty value
+                var showOnEmptyValue = (typeof depObject.empty=='undefined') ? false : depObject.empty;
+
+                var eqtag = $(depObject.like).prop("tagName").toLowerCase();
+                var eqtype = $(depObject.like).prop("type").toLowerCase();
+                var eqname = eqtag + ':' + eqtype;
+
+                if( eqname=='input:checkbox' || eqname=='input:radio' ){
+                    depObject.value = $(depObject.like + ':checked').map(function () {
+                        return this.value;
+                    }).get();
+                }else{
+
+                    depObject.value = $(depObject.like).val();
+
+                    if( !showOnEmptyValue ){
+                        depObject.value = ($.trim($(depObject.like).val())=='') ? null : $(depObject.like).val() ;
+                    }
+                }
+
+            }
+
+
+
             switch (name) {
                 case "input:text":
                 case "input:password":
@@ -341,6 +369,32 @@
             var type = $(parent).prop("type").toLowerCase();
             var name = tag + ':' + type;
             var value = $(parent).val();
+
+            var equalLike = (typeof depObject.like=='undefined') ? false : true;
+
+            if( equalLike ){
+
+                // Allow when both have empty value
+                var showOnEmptyValue = (typeof depObject.empty=='undefined') ? false : depObject.empty;
+
+                var eqtag = $(depObject.like).prop("tagName").toLowerCase();
+                var eqtype = $(depObject.like).prop("type").toLowerCase();
+                var eqname = eqtag + ':' + eqtype;
+
+                if( eqname=='input:checkbox' || eqname=='input:radio' ){
+                    depObject.value = $(depObject.like + ':checked').map(function () {
+                        return this.value;
+                    }).get();
+                }else{
+
+                    depObject.value = $(depObject.like).val();
+
+                    if( !showOnEmptyValue ){
+                        depObject.value = ($.trim($(depObject.like).val())=='') ? null : $(depObject.like).val() ;
+                    }
+                }
+
+            }
 
             switch (name) {
                 case "input:text":
