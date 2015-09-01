@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Simple Form Field Dependency</title>
+    <link rel="stylesheet" href="bootstrap.min.css"/>
+    <link rel="stylesheet" href="style.css"/>
+    <script src="jquery.min.js"></script>
+    <script src="form-field-dependency.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <form>
+                <div class="form-group">
+                    <label for="InputEmail">Email address:</label>
+                    <input type="text" class="form-control" id="InputEmail" placeholder="Email">
+                </div>
+
+                <div class="form-group" data-depends="{'#InputEmail':{'type':'regexp', 'pattern':'[a-z]+@[a-z]+.[a-z]', 'modifier':'i'}}">
+                    <label for="InputValidRegExpString">Will Show On Email address is valid.</label>
+                    <input type="text" class="form-control" id="InputValidRegExpString" placeholder="">
+                </div>
+
+                <div class="form-group" data-depends="{'#InputEmail':{'type':'equal', 'value':'lorem'}}">
+                    <label for="InputNonArrayString">Will Show On Email field filledUp with 'lorem'. Non Array</label>
+                    <input type="text" class="form-control" id="InputNonArrayString" placeholder="">
+                </div>
+
+                <div class="form-group" data-depends="{'#InputEmail':{'type':'equal', 'value':['lorem','ipsum']}}">
+                    <label for="InputArrayString">Will Show On Email field filledUp with 'lorem' or 'ipsum'. With Array</label>
+                    <input type="text" class="form-control" id="InputArrayString" placeholder="">
+                </div>
+
+                <div class="form-group" data-depends="{'#InputEmail':{'type':'notempty'}}">
+                    <label for="InputNotEmpty">Will Show On Email field Not Empty</label>
+                    <input type="text" class="form-control" id="InputNotEmpty" placeholder="">
+                </div>
+
+                <div class="form-group" data-depends="{'#InputEmail':{'type':'empty'}}">
+                    <label for="InputEmpty">Will Hide On Email field filled Up</label>
+                    <input type="text" class="form-control" id="InputEmpty" placeholder="">
+                </div>
+
+
+
+
+
+                <div class="form-group">
+                    <label for="InputAddress">Address:</label>
+                    <textarea class="form-control" id="InputAddress" placeholder="Address"></textarea>
+                </div>
+
+                <div class="form-group" data-depends="{'#InputAddress':{'type':'empty'}}">
+                    <label for="InputTextAreaEmpty">Will Show on TextArea Empty</label>
+                    <input type="text" class="form-control" id="InputTextAreaEmpty" placeholder="">
+                </div>
+
+                <div class="form-group">
+                    <label for="InputSelectOne">Select One:</label>
+                    <select id="InputSelectOne" class="form-control">
+                        <option value="">Select</option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="three">Three</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="InputSelectMulti">Select Multi:</label>
+                    <select id="InputSelectMulti" multiple="multiple" class="form-control">
+                        <option value="">Select</option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="three">Three</option>
+                    </select>
+                </div>
+
+                <div class="form-group checkboxes">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" class="checkboxes" id="inlineCheckbox1" value="option1"> 1
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" class="checkboxes" id="inlineCheckbox2" value="option2"> 2
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" class="checkboxes" id="inlineCheckbox3" value="option3"> 3
+                    </label>
+                </div>
+
+
+                <div class="form-group" data-depends="{'input.checkboxes':{'type':'empty'}}">
+                    <label for="InputCheckBoxEmpty">Will Show on Checkbox (1 | 2 | 3) NOT checked</label>
+                    <input type="text" class="form-control" id="InputCheckBoxEmpty" placeholder="">
+                </div>
+
+                <div class="form-group" data-depends="{'input.checkboxes':{'type':'!empty'}}">
+                    <label for="InputCheckBoxNotEmpty">Will Show on Checkbox (1 | 2 | 3) checked</label>
+                    <input type="text" class="form-control" id="InputCheckBoxNotEmpty" placeholder="">
+                </div>
+
+                <div class="form-group" data-depends="{'input.checkboxes':{'type':'equal', 'value':'option1'}}">
+                    <label for="InputCheckBoxEqual">Will Show on Checkbox ( 1 ) checked. Non Array</label>
+                    <input type="text" class="form-control" id="InputCheckBoxEqual" placeholder="">
+                </div>
+
+                <div class="form-group" data-depends="{'input.checkboxes':{'type':'equal', 'value':['option2','option3']}}">
+                    <label for="InputCheckBoxEqualArray">Will Show on Checkbox (2 | 3) checked. Array</label>
+                    <input type="text" class="form-control" id="InputCheckBoxEqualArray" placeholder="">
+                </div>
+
+                <div class="form-group" data-depends="{'input.checkboxes':{'type':'equal', 'value':['option2','option3'], 'strict':true}}">
+                    <label for="InputCheckBoxEqualArrayMust">Will Show on Checkbox (2 & 3) checked. Array</label>
+                    <input type="text" class="form-control" id="InputCheckBoxEqualArrayMust" placeholder="">
+                </div>
+
+                <div class="form-group" data-depends="{'input.checkboxes':{'type':'!equal', 'value':'option2'}}">
+                    <label for="InputCheckBoxNotEqual">Will Show on Checkbox (2) NOT checked.</label>
+                    <input type="text" class="form-control" id="InputCheckBoxNotEqual" placeholder="">
+                </div>
+
+                <div class="form-group" data-depends="{'input.checkboxes':{'type':'!equal', 'value':['option2','option3']}}">
+                    <label for="InputCheckBoxNotEqualArray">Will Show on Checkbox (2 | 3) NOT checked.</label>
+                    <input type="text" class="form-control" id="InputCheckBoxNotEqualArray" placeholder="">
+                </div>
+
+                <div class="form-group" data-depends="{'input.checkboxes':{'type':'!equal', 'value':['option2','option3'], 'strict':true}}">
+                    <label for="InputCheckBoxNotEqualArrayStrict">Will Show on Checkbox (2 & 3) NOT checked.</label>
+                    <input type="text" class="form-control" id="InputCheckBoxNotEqualArrayStrict" placeholder="">
+                </div>
+
+
+
+                <div class="form-group radios">
+                    <label class="radio-inline">
+                        <input type="radio" class="radios" name="inlineRadioOptions" id="inlineRadio1" value="option1"> 1
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" class="radios" name="inlineRadioOptions" id="inlineRadio2" value="option2"> 2
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" class="radios" name="inlineRadioOptions" id="inlineRadio3" value="option3"> 3
+                    </label>
+                </div>
+
+
+                <div class="form-group" data-depends="{'input.radios':{'type':'empty'}}">
+                    <label for="InputRadioEmpty">Will Show on Radio (1 | 2 | 3) NOT checked</label>
+                    <input type="text" class="form-control" id="InputRadioEmpty" placeholder="">
+                </div>
+
+                <div class="form-group" data-depends="{'input.radios':{'type':'!empty'}}">
+                    <label for="InputRadioNotEmpty">Will Show on Radio (1 | 2 | 3) checked</label>
+                    <input type="text" class="form-control" id="InputRadioNotEmpty" placeholder="">
+                </div>
+
+                <div class="form-group" data-depends="{'input.radios':{'type':'equal', 'value':'option1'}}">
+                    <label for="InputRadioEqual">Will Show on Radio ( 1 ) checked. Non Array</label>
+                    <input type="text" class="form-control" id="InputRadioEqual" placeholder="">
+                </div>
+
+                <div class="form-group" data-depends="{'input.radios':{'type':'equal', 'value':['option2','option3']}}">
+                    <label for="InputRadioEqualArray">Will Show on Radio (2 | 3) checked. Array</label>
+                    <input type="text" class="form-control" id="InputRadioEqualArray" placeholder="">
+                </div>
+
+                <div class="form-group" data-depends="{'input.radios':{'type':'!equal', 'value':'option2'}}">
+                    <label for="InputRadioNotEqual">Will Show on Radio (2) NOT checked.</label>
+                    <input type="text" class="form-control" id="InputRadioNotEqual" placeholder="">
+                </div>
+
+                <div class="form-group" data-depends="{'input.radios':{'type':'!equal', 'value':['option2','option3']}}">
+                    <label for="InputRadioNotEqualArray">Will Show on Radio (2 | 3) NOT checked.</label>
+                    <input type="text" class="form-control" id="InputRadioNotEqualArray" placeholder="">
+                </div>
+
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--
+
+               {
+
+                   '#exampleInputEmail3' : {'type':'empty'},
+                   '#exampleInputEmail3' : {'type':'!empty'},
+
+                   '#exampleInputEmail3' : {'type':'equal', 'value':'b'},
+                   '#exampleInputEmail3' : {'type':'equal', 'value':['a', 'b', 'c']},
+                   '#exampleInputEmail3' : {'type':'equal', 'value':['a', 'b', 'c'], 'strict':true},
+
+                   '#exampleInputEmail3' : {'type':'!equal', 'value':'a'},
+                   '#exampleInputEmail3' : {'type':'!equal', 'value':['a', 'b', 'c']},
+
+                   '#exampleInputEmail3' : {'type':'regexp', 'pattern':'[a-z]+@[a-z]+.[a-z]+', 'modifier':'gi'},
+
+
+
+
+
+
+
+
+                   '#exampleInputEmail3' : {'type':'like', 'as':'#exampleInputEmail4'},
+
+
+
+                   '#exampleInputEmail3' : {'type':'compare', 'value':'100', 'sign':'>'},
+
+                   '#exampleInputEmail3' : {'type':'length', 'value':'100', 'sign':'='},
+
+                   '#exampleInputEmail3' : {'type':'any', 'value':['a', 'b', 'c']},
+
+
+                   '#exampleInputEmail3' : {'type':'range', 'value':['10', '50']},
+
+               }
+
+               -->
+</body>
+</html>
