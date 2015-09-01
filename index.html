@@ -68,6 +68,11 @@
                     <textarea class="form-control" id="InputAddress" placeholder="Address"></textarea>
                 </div>
 
+                <div class="form-group" data-depends="{'#InputAddress':{'type':'length', 'sign':'>=', 'value':'5'}}">
+                    <label for="InputTextAreaLength">Will Show on TextArea Text Length >= 5</label>
+                    <input type="text" class="form-control" id="InputTextAreaLength" placeholder="">
+                </div>
+
                 <div class="form-group" data-depends="{'#InputAddress':{'type':'empty'}}">
                     <label for="InputTextAreaEmpty">Will Show on TextArea Empty</label>
                     <input type="text" class="form-control" id="InputTextAreaEmpty" placeholder="">
@@ -264,11 +269,13 @@
 
 
 
-                   '#exampleInputEmail3' : {'type':'compare', 'value':'100', 'sign':'>'},
+                   '#exampleInputEmail3' : {'type':'compare', 'value':'100', 'sign':'>|<|<=|>=|=|=='},
 
-                   '#exampleInputEmail3' : {'type':'length', 'value':'100', 'sign':'='},
+                   '#exampleInputEmail3' : {'type':'length', 'sign':'>', 'value':'100'},
 
                    '#exampleInputEmail3' : {'type':'range', 'value':['10', '50']},
+                   '#exampleInputEmail3' : {'type':'range', 'min':'10', 'max':'50']},
+                   '#exampleInputEmail3' : {'type':'range', 'min':'#ID', 'max':'#ID']},
 
                }
 

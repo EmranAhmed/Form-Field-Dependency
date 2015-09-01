@@ -491,6 +491,173 @@
             }
         };
 
+
+        /**
+         * TextBox value compare
+         * @param element
+         * @param depObject
+         * @param parent
+         * @param useEvent
+         */
+        var typeCompareDependency = function (element, depObject, parent, useEvent) {
+
+            if (typeof useEvent == 'undefined') {
+                useEvent = false;
+            }
+            var tag = $(parent).prop("tagName").toLowerCase();
+            var type = $(parent).prop("type").toLowerCase();
+            var name = tag + ':' + type;
+            var value = parseInt($(parent).val());
+            depObject.value = parseInt(depObject.value);
+
+            switch (depObject.sign) {
+                case "<":
+                case "lt":
+                case "lessthen":
+                case "less-then":
+                case "LessThen":
+                if( value <  depObject.value){
+                    $(element).show();
+                }else{
+                    $(element).hide();
+                }
+                break;
+
+                case "<=":
+                case "lteq":
+                case "lessthenequal":
+                case "less-then-equal":
+                case "LessThenEqual":
+                case "eqlt":
+                if( value <=  depObject.value){
+                    $(element).show();
+                }else{
+                    $(element).hide();
+                }
+                break;
+
+                case ">=":
+                case "gteq":
+                case "greaterthenequal":
+                case "greater-then-equal":
+                case "GreaterThenEqual":
+                case "eqgt":
+                if( value >=  depObject.value){
+                    $(element).show();
+                }else{
+                    $(element).hide();
+                }
+                break;
+
+                case ">":
+                case "gt":
+                case "greaterthen":
+                case "greater-then":
+                case "GreaterThen":
+                if( value >  depObject.value){
+                    $(element).show();
+                }else{
+                    $(element).hide();
+                }
+                break;
+
+
+            }
+
+            if (useEvent) {
+                $(document.body).on('keyup change', $(parent), function (e) {
+                    e.stopPropagation();
+                    typeCompareDependency(element, depObject, parent, false);
+                });
+            }
+        };
+
+
+        /**
+         * TextBox value length
+         * @param element
+         * @param depObject
+         * @param parent
+         * @param useEvent
+         */
+        var typeLengthDependency = function (element, depObject, parent, useEvent) {
+
+            if (typeof useEvent == 'undefined') {
+                useEvent = false;
+            }
+            var tag = $(parent).prop("tagName").toLowerCase();
+            var type = $(parent).prop("type").toLowerCase();
+            var name = tag + ':' + type;
+            var value = $(parent).val().length;
+            depObject.value = parseInt(depObject.value);
+
+            switch (depObject.sign) {
+                case "<":
+                case "lt":
+                case "lessthen":
+                case "less-then":
+                case "LessThen":
+                if( value <  depObject.value){
+                    $(element).show();
+                }else{
+                    $(element).hide();
+                }
+                break;
+
+                case "<=":
+                case "lteq":
+                case "lessthenequal":
+                case "less-then-equal":
+                case "LessThenEqual":
+                case "eqlt":
+                if( value <=  depObject.value){
+                    $(element).show();
+                }else{
+                    $(element).hide();
+                }
+                break;
+
+                case ">=":
+                case "gteq":
+                case "greaterthenequal":
+                case "greater-then-equal":
+                case "GreaterThenEqual":
+                case "eqgt":
+                if( value >=  depObject.value){
+                    $(element).show();
+                }else{
+                    $(element).hide();
+                }
+                break;
+
+                case ">":
+                case "gt":
+                case "greaterthen":
+                case "greater-then":
+                case "GreaterThen":
+                if( value >  depObject.value){
+                    $(element).show();
+                }else{
+                    $(element).hide();
+                }
+                break;
+
+
+            }
+
+            if (useEvent) {
+                $(document.body).on('keyup change', $(parent), function (e) {
+                    e.stopPropagation();
+                    typeLengthDependency(element, depObject, parent, false);
+                });
+            }
+        };
+
+
+
+
+
+
         /**
          * Using Types
          * @param $el
@@ -530,6 +697,16 @@
                     case "reg":
                     case "exp":
                         typeRegExpDependency($el, depObject, selector, true);
+                        break;
+
+                    case "compare":
+                    case "comp":
+                        typeCompareDependency($el, depObject, selector, true);
+                        break;
+
+                    case "length":
+                    case "lng":
+                        typeLengthDependency($el, depObject, selector, true);
                         break;
 
                 }
