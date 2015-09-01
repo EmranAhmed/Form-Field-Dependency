@@ -516,12 +516,13 @@
                 case "lessthen":
                 case "less-then":
                 case "LessThen":
-                if( value <  depObject.value){
-                    $(element).show();
-                }else{
-                    $(element).hide();
-                }
-                break;
+                    if (value < depObject.value) {
+                        $(element).show();
+                    }
+                    else {
+                        $(element).hide();
+                    }
+                    break;
 
                 case "<=":
                 case "lteq":
@@ -529,12 +530,13 @@
                 case "less-then-equal":
                 case "LessThenEqual":
                 case "eqlt":
-                if( value <=  depObject.value){
-                    $(element).show();
-                }else{
-                    $(element).hide();
-                }
-                break;
+                    if (value <= depObject.value) {
+                        $(element).show();
+                    }
+                    else {
+                        $(element).hide();
+                    }
+                    break;
 
                 case ">=":
                 case "gteq":
@@ -542,24 +544,26 @@
                 case "greater-then-equal":
                 case "GreaterThenEqual":
                 case "eqgt":
-                if( value >=  depObject.value){
-                    $(element).show();
-                }else{
-                    $(element).hide();
-                }
-                break;
+                    if (value >= depObject.value) {
+                        $(element).show();
+                    }
+                    else {
+                        $(element).hide();
+                    }
+                    break;
 
                 case ">":
                 case "gt":
                 case "greaterthen":
                 case "greater-then":
                 case "GreaterThen":
-                if( value >  depObject.value){
-                    $(element).show();
-                }else{
-                    $(element).hide();
-                }
-                break;
+                    if (value > depObject.value) {
+                        $(element).show();
+                    }
+                    else {
+                        $(element).hide();
+                    }
+                    break;
 
 
             }
@@ -568,6 +572,53 @@
                 $(document.body).on('keyup change', $(parent), function (e) {
                     e.stopPropagation();
                     typeCompareDependency(element, depObject, parent, false);
+                });
+            }
+        };
+
+        /**
+         * TextBox value range
+         * @param element
+         * @param depObject
+         * @param parent
+         * @param useEvent
+         */
+        var typeRangeDependency = function (element, depObject, parent, useEvent) {
+
+            if (typeof useEvent == 'undefined') {
+                useEvent = false;
+            }
+            var tag = $(parent).prop("tagName").toLowerCase();
+            var type = $(parent).prop("type").toLowerCase();
+            var name = tag + ':' + type;
+            var value = parseInt($(parent).val());
+            var min, max;
+
+
+            // value = [50, 100]
+
+            if ($.isArray(depObject.value)) {
+                min = parseInt(depObject.value[0]);
+                max = parseInt(depObject.value[1]);
+            }
+
+            if (typeof depObject.value == 'undefined') {
+                min = parseInt(depObject.min);
+                max = parseInt(depObject.max);
+            }
+
+            if (min < value && value < max) {
+                $(element).show();
+            }
+            else {
+                $(element).hide();
+            }
+
+
+            if (useEvent) {
+                $(document.body).on('keyup change', $(parent), function (e) {
+                    e.stopPropagation();
+                    typeRangeDependency(element, depObject, parent, false);
                 });
             }
         };
@@ -597,12 +648,13 @@
                 case "lessthen":
                 case "less-then":
                 case "LessThen":
-                if( value <  depObject.value){
-                    $(element).show();
-                }else{
-                    $(element).hide();
-                }
-                break;
+                    if (value < depObject.value) {
+                        $(element).show();
+                    }
+                    else {
+                        $(element).hide();
+                    }
+                    break;
 
                 case "<=":
                 case "lteq":
@@ -610,12 +662,13 @@
                 case "less-then-equal":
                 case "LessThenEqual":
                 case "eqlt":
-                if( value <=  depObject.value){
-                    $(element).show();
-                }else{
-                    $(element).hide();
-                }
-                break;
+                    if (value <= depObject.value) {
+                        $(element).show();
+                    }
+                    else {
+                        $(element).hide();
+                    }
+                    break;
 
                 case ">=":
                 case "gteq":
@@ -623,24 +676,26 @@
                 case "greater-then-equal":
                 case "GreaterThenEqual":
                 case "eqgt":
-                if( value >=  depObject.value){
-                    $(element).show();
-                }else{
-                    $(element).hide();
-                }
-                break;
+                    if (value >= depObject.value) {
+                        $(element).show();
+                    }
+                    else {
+                        $(element).hide();
+                    }
+                    break;
 
                 case ">":
                 case "gt":
                 case "greaterthen":
                 case "greater-then":
                 case "GreaterThen":
-                if( value >  depObject.value){
-                    $(element).show();
-                }else{
-                    $(element).hide();
-                }
-                break;
+                    if (value > depObject.value) {
+                        $(element).show();
+                    }
+                    else {
+                        $(element).hide();
+                    }
+                    break;
 
 
             }
@@ -652,10 +707,6 @@
                 });
             }
         };
-
-
-
-
 
 
         /**
@@ -707,6 +758,10 @@
                     case "length":
                     case "lng":
                         typeLengthDependency($el, depObject, selector, true);
+                        break;
+
+                    case "range":
+                        typeRangeDependency($el, depObject, selector, true);
                         break;
 
                 }
