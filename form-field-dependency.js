@@ -1,13 +1,23 @@
 (function ($) {
 
     $.fn.formFieldDependency = function (options) {
-        
+
+        /**
+         * Plugin Settings
+         * @type {void|*}
+         */
         var settings = $.extend({
             'attribute' : 'data-depends',
             'rules'     : {}
         }, options);
 
-
+        /**
+         * Check array exists on array
+         * @param needleArray
+         * @param haystackArray
+         * @param strict
+         * @returns {boolean}
+         */
         var arrayInArraysHelper = function (needleArray, haystackArray, strict) {
 
             if (typeof strict == 'undefined') {
@@ -30,6 +40,12 @@
             }
         };
 
+        /**
+         * Check string exist on array value
+         * @param needleString
+         * @param haystackArray
+         * @returns {boolean}
+         */
         var stringInArraysHelper = function (needleString, haystackArray) {
 
             if (($.inArray(needleString, haystackArray) >= 0) && isArray(haystackArray) ) {
@@ -40,6 +56,11 @@
             }
         };
 
+        /**
+         * Check value is array or not
+         * @param value
+         * @returns {boolean}
+         */
         var isArray = function(value){
             return value instanceof Array;
         };
@@ -69,10 +90,9 @@
                 }
             }
         };
-
-
+        
         /**
-         * For TextBox Regular Expression
+         * For Regular Expression Dependency
          * @param element
          * @param depObject
          * @param parent
@@ -119,7 +139,7 @@
         };
 
         /**
-         * For empty TextBox
+         * For Empty TextBox
          * @param element
          * @param depObject
          * @param parent
@@ -384,6 +404,11 @@
             }
         };
 
+        /**
+         * Using Types
+         * @param $el
+         * @param $data
+         */
         var useTypes = function($el, $data){
             $.each($data, function (selector, depObject) {
 
@@ -423,14 +448,12 @@
                 }
             });
         };
-        var useRules = function($data){
 
+        (function($data){
             $.each($data, function ($el, depObject) {
                 useTypes($($el), depObject);
             });
-        };
-
-        useRules(settings.rules);
+        })(settings.rules);
 
         return this.each(function () {
             $data = JSON.parse($(this).attr(settings.attribute).replace(/'/g, '"'));

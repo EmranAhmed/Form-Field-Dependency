@@ -1,4 +1,6 @@
 jQuery(function ($) {
+
+
     $('[data-depends]').formFieldDependency();
 
 
