@@ -48,7 +48,7 @@
          */
         var stringInArraysHelper = function (needleString, haystackArray) {
 
-            if (($.inArray(needleString, haystackArray) >= 0) && isArray(haystackArray) ) {
+            if (($.inArray(needleString, haystackArray) >= 0) && $.isArray(haystackArray)) {
                 return true;
             }
             else {
@@ -57,36 +57,36 @@
         };
 
         /**
-         * Check value is array or not
+         * Check value is empty or not
          * @param value
          * @returns {boolean}
          */
-        var isArray = function(value){
-            return value instanceof Array;
-        };
 
-        var selectFn = function (element, selector, expected_value) {
+        var isEmpty = function (value) {
 
-            var current_value = $(selector).val();
-
-
-            // Multi Select
-            if (Array.isArray(current_value)) {
-
-                if (arrayInArray(current_value, expected_value)) {
-                    element.show();
-                }
-                else {
-                    element.hide();
-                }
+            if (typeof value == 'null' || typeof value == 'undefined') {
+                return true;
             }
-            else { // Single Select
 
-                if (expected_value.toString().indexOf(current_value) > -1) {
-                    element.show();
+            if (typeof value == 'string') {
+                return ($.trim(value) == '') ? true : false;
+            }
+
+            if (typeof value == 'string') {
+                return ($.trim(value) == '') ? true : false;
+            }
+
+            if (typeof value == 'object') {
+                if ($.isArray(value)) {
+                    //var _tmp = [];
+                    var _tmp = $.map(value, function (val, i) {
+                        return ($.trim(val) == '') ? null : val;
+                    });
+
+                    return $.isEmptyObject(_tmp);
                 }
                 else {
-                    element.hide();
+                    return $.isEmptyObject(value);
                 }
             }
         };
@@ -148,8 +148,6 @@
         var typeEmptyDependency = function (element, depObject, parent, useEvent) {
 
 
-
-
             if (typeof useEvent == 'undefined') {
                 useEvent = false;
             }
@@ -167,6 +165,7 @@
                 case "input:url":
                 case "input:tel":
                 case "textarea:textarea":
+                case "select:select-one":
 
                     if ($.trim(value) == '') {
                         $(element).show();
@@ -177,12 +176,23 @@
                     break;
 
                 case "input:checkbox":
-                    if ($(parent).is(':checked')) {
+                    if ($(parent).is(':checked') && $.trim(value) != '') {
                         $(element).hide();
                     }
                     else {
                         $(element).show();
                     }
+                    break;
+
+                case "select:select-multiple":
+
+                    if (isEmpty(value)) {
+                        $(element).show();
+                    }
+                    else {
+                        $(element).hide();
+                    }
+
                     break;
             }
 
@@ -220,6 +230,7 @@
                 case "input:url":
                 case "input:tel":
                 case "textarea:textarea":
+                case "select:select-one":
 
                     if ($.trim(value) != '') {
                         $(element).show();
@@ -230,12 +241,24 @@
                     break;
 
                 case "input:checkbox":
-                    if ($(parent).is(':checked')) {
+                    if ($(parent).is(':checked') && $.trim(value) != '') {
                         $(element).show();
                     }
                     else {
                         $(element).hide();
                     }
+                    break;
+
+                case "select:select-multiple":
+
+                    if (isEmpty(value)) {
+                        $(element).hide();
+                    }
+                    else {
+                        $(element).show();
+                    }
+
+                    break;
             }
 
             if (useEvent) {
@@ -264,33 +287,33 @@
             var name = tag + ':' + type;
             var value = $(parent).val();
 
-            var equalLike = (typeof depObject.like=='undefined') ? false : true;
+            var equalLike = (typeof depObject.like == 'undefined') ? false : true;
 
-            if( equalLike ){
+            depObject.strict = (typeof depObject.strict == 'undefined') ? false : depObject.strict;
+
+            if (equalLike) {
 
                 // Allow when both have empty value
-                var showOnEmptyValue = (typeof depObject.empty=='undefined') ? false : depObject.empty;
+                var showOnEmptyValue = (typeof depObject.empty == 'undefined') ? false : depObject.empty;
 
                 var eqtag = $(depObject.like).prop("tagName").toLowerCase();
                 var eqtype = $(depObject.like).prop("type").toLowerCase();
                 var eqname = eqtag + ':' + eqtype;
 
-                if( eqname=='input:checkbox' || eqname=='input:radio' ){
+                if (eqname == 'input:checkbox' || eqname == 'input:radio') {
                     depObject.value = $(depObject.like + ':checked').map(function () {
                         return this.value;
                     }).get();
-                }else{
+                }
+                else {
 
                     depObject.value = $(depObject.like).val();
 
-                    if( !showOnEmptyValue ){
-                        depObject.value = ($.trim($(depObject.like).val())=='') ? null : $(depObject.like).val() ;
+                    if (!showOnEmptyValue) {
+                        depObject.value = ($.trim($(depObject.like).val()) == '') ? null : $(depObject.like).val();
                     }
                 }
-
             }
-
-
 
             switch (name) {
                 case "input:text":
@@ -301,6 +324,7 @@
                 case "input:url":
                 case "input:tel":
                 case "textarea:textarea":
+                case "select:select-one":
 
                     if ($.trim(value) == depObject.value) {
                         $(element).show();
@@ -317,15 +341,9 @@
                 case "input:checkbox":
                 case "input:radio":
 
-
                     var value = $(parent + ':checked').map(function () {
                         return this.value;
                     }).get();
-
-                    if (typeof depObject.strict == 'undefined') {
-                        depObject.strict = false;
-                    }
-
 
                     if (value == depObject.value) {
                         $(element).show();
@@ -339,9 +357,17 @@
                     else {
                         $(element).hide();
                     }
-
                     break;
 
+                case "select:select-multiple":
+
+                    if (arrayInArraysHelper(value, depObject.value, depObject.strict)) {
+                        $(element).show();
+                    }
+                    else {
+                        $(element).hide();
+                    }
+                    break;
             }
 
             if (useEvent) {
@@ -370,30 +396,31 @@
             var name = tag + ':' + type;
             var value = $(parent).val();
 
-            var equalLike = (typeof depObject.like=='undefined') ? false : true;
+            var equalLike = (typeof depObject.like == 'undefined') ? false : true;
+            depObject.strict = (typeof depObject.strict == 'undefined') ? false : depObject.strict;
 
-            if( equalLike ){
+            if (equalLike) {
 
                 // Allow when both have empty value
-                var showOnEmptyValue = (typeof depObject.empty=='undefined') ? false : depObject.empty;
+                var showOnEmptyValue = (typeof depObject.empty == 'undefined') ? false : depObject.empty;
 
                 var eqtag = $(depObject.like).prop("tagName").toLowerCase();
                 var eqtype = $(depObject.like).prop("type").toLowerCase();
                 var eqname = eqtag + ':' + eqtype;
 
-                if( eqname=='input:checkbox' || eqname=='input:radio' ){
+                if (eqname == 'input:checkbox' || eqname == 'input:radio') {
                     depObject.value = $(depObject.like + ':checked').map(function () {
                         return this.value;
                     }).get();
-                }else{
+                }
+                else {
 
                     depObject.value = $(depObject.like).val();
 
-                    if( !showOnEmptyValue ){
-                        depObject.value = ($.trim($(depObject.like).val())=='') ? null : $(depObject.like).val() ;
+                    if (!showOnEmptyValue) {
+                        depObject.value = ($.trim($(depObject.like).val()) == '') ? null : $(depObject.like).val();
                     }
                 }
-
             }
 
             switch (name) {
@@ -405,6 +432,7 @@
                 case "input:url":
                 case "input:tel":
                 case "textarea:textarea":
+                case "select:select-one":
 
                     if (value == depObject.value) {
                         $(element).hide();
@@ -417,10 +445,8 @@
                     }
                     break;
 
-
                 case "input:checkbox":
                 case "input:radio":
-
 
                     var value = $(parent + ':checked').map(function () {
                         return this.value;
@@ -429,7 +455,6 @@
                     if (typeof depObject.strict == 'undefined') {
                         depObject.strict = false;
                     }
-
 
                     if (value == depObject.value) {
                         $(element).hide();
@@ -446,9 +471,17 @@
 
                     break;
 
+                case "select:select-multiple":
 
+                    if (arrayInArraysHelper(value, depObject.value, depObject.strict)) {
+                        $(element).hide();
+                    }
+                    else {
+                        $(element).show();
+                    }
+
+                    break;
             }
-
 
             if (useEvent) {
                 $(document.body).on('keyup change', $(parent), function (e) {
@@ -463,7 +496,7 @@
          * @param $el
          * @param $data
          */
-        var useTypes = function($el, $data){
+        var useTypes = function ($el, $data) {
             $.each($data, function (selector, depObject) {
 
                 switch (depObject.type) {
@@ -503,7 +536,7 @@
             });
         };
 
-        (function($data){
+        (function ($data) {
             $.each($data, function ($el, depObject) {
                 useTypes($($el), depObject);
             });

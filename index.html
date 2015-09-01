@@ -79,13 +79,23 @@
                         <option value="">Select</option>
                         <option value="1">One</option>
                         <option value="2">Two</option>
-                        <option value="three">Three</option>
+                        <option value="three" selected>Three</option>
                     </select>
                 </div>
 
                 <div class="form-group" data-depends="{'#InputSelectOne':{'type':'empty'}}">
                     <label for="InputSelectOneEmpty">Will Show on Select One Empty</label>
                     <input type="text" class="form-control" id="InputSelectOneEmpty" placeholder="">
+                </div>
+
+                <div class="form-group" data-depends="{'#InputSelectOne':{'type':'!empty'}}">
+                    <label for="InputSelectOneNotEmpty">Will Show on Select One NOT Empty</label>
+                    <input type="text" class="form-control" id="InputSelectOneNotEmpty" placeholder="">
+                </div>
+
+                <div class="form-group" data-depends="{'#InputSelectOne':{'type':'equal','value':['three','2']}}">
+                    <label for="InputSelectOneEqual">Will Show on Select One  Equal Three | 2 selected</label>
+                    <input type="text" class="form-control" id="InputSelectOneEqual" placeholder="">
                 </div>
 
                 <div class="form-group">
@@ -96,6 +106,8 @@
                         <option value="three">Three</option>
                     </select>
                 </div>
+
+
 
                 <div class="form-group system1">
                     <label class="checkbox-inline">
@@ -255,9 +267,6 @@
                    '#exampleInputEmail3' : {'type':'compare', 'value':'100', 'sign':'>'},
 
                    '#exampleInputEmail3' : {'type':'length', 'value':'100', 'sign':'='},
-
-                   '#exampleInputEmail3' : {'type':'any', 'value':['a', 'b', 'c']},
-
 
                    '#exampleInputEmail3' : {'type':'range', 'value':['10', '50']},
 
