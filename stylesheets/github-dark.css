@@ -114,3 +114,9 @@
   color: #264ec5;
 }
 
+
+
+[data-depends], .dependency-field{
+    display: none;
+    }
+
