@@ -295,12 +295,12 @@
 
             var equalLike = (typeof depObject.like == 'undefined') ? false : true;
 
+            // show if empty?. default false
+            depObject.empty = (typeof depObject.empty == 'undefined') ? false : depObject.empty;
+
             depObject.strict = (typeof depObject.strict == 'undefined') ? false : depObject.strict;
 
             if (equalLike) {
-
-                // Allow when both have empty value
-                var showOnEmptyValue = (typeof depObject.empty == 'undefined') ? false : depObject.empty;
 
                 var eqtag = $(depObject.like).prop("tagName").toLowerCase();
                 var eqtype = $(depObject.like).prop("type").toLowerCase();
@@ -339,7 +339,12 @@
                         $(element).show();
                     }
                     else {
-                        $(element).hide();
+
+                        if( $.trim(value)=='' && depObject.empty ){
+                            $(element).show();
+                        }else{
+                            $(element).hide();
+                        }
                     }
 
                     break;
@@ -351,6 +356,8 @@
                         return this.value;
                     }).get();
 
+
+
                     if (value == depObject.value) {
                         $(element).show();
                     }
@@ -361,7 +368,12 @@
                         $(element).show();
                     }
                     else {
-                        $(element).hide();
+                        console.log(value, depObject.empty);
+                        if( isEmpty(value) &&  depObject.empty){
+                            $(element).show();
+                        } else {
+                            $(element).hide();
+                        }
                     }
                     break;
 
@@ -371,7 +383,12 @@
                         $(element).show();
                     }
                     else {
-                        $(element).hide();
+
+                        if( value==null && depObject.empty ){
+                            $(element).show();
+                        } else{
+                            $(element).hide();
+                        }
                     }
                     break;
             }
@@ -405,7 +422,7 @@
             var equalLike = (typeof depObject.like == 'undefined') ? false : true;
             depObject.strict = (typeof depObject.strict == 'undefined') ? false : depObject.strict;
 
-            // show if empty
+            // show if empty? default is true
             depObject.empty = (typeof depObject.empty == 'undefined') ? true : depObject.empty;
 
 
@@ -454,23 +471,11 @@
                         $(element).hide();
                     }
                     else {
-
-                        if ($.trim(value) == '' && depObject.empty) {
-                            $(element).show();
-                        }
-
-                        if ($.trim(value) != '' && depObject.empty) {
-                            $(element).show();
-                        }
-
-                        if ($.trim(value) != '' && !depObject.empty) {
-                            $(element).show();
-                        }
-
                         if ($.trim(value) == '' && !depObject.empty) {
                             $(element).hide();
+                        } else {
+                            $(element).show();
                         }
-
                     }
                     break;
 
@@ -499,19 +504,11 @@
                         $(element).hide();
                     }
                     else {
-
-                        if (isEmpty(value) && depObject.empty) {
+                        if (isEmpty(value) && !depObject.empty) {
+                            $(element).hide();
+                        }else{
                             $(element).show();
                         }
-
-                        if (!isEmpty(value) && depObject.empty) {
-                            $(element).show();
-                        }
-
-                        if (!isEmpty(value) && !depObject.empty) {
-                            $(element).show();
-                        }
-
                     }
 
                     break;
@@ -520,16 +517,10 @@
 
                     if (arrayInArraysHelper(value, depObject.value, depObject.strict)) {
                         $(element).hide();
-                    }
-                    else {
-                        
-                        if( value==null && depObject.empty ) {
-                            $(element).show();
-                        }
-                        if( value!=null && !depObject.empty ) {
-                            $(element).show();
-                        }
-                        if( value!=null && depObject.empty ) {
+                    } else {
+                        if( value==null && !depObject.empty ) {
+                            $(element).hide();
+                        }else{
                             $(element).show();
                         }
                     }

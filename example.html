@@ -106,9 +106,9 @@
                 <div class="form-group">
                     <label for="InputSelectMulti">Select Multi:</label>
                     <select id="InputSelectMulti" multiple="multiple" class="form-control">
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="three">Three</option>
+                        <option value="option1">One</option>
+                        <option value="option2">Two</option>
+                        <option value="option3">Three</option>
                     </select>
                 </div>
 
@@ -242,8 +242,8 @@
                     <input type="text" class="form-control" id="InputRadioNotEqualArray" placeholder="">
                 </div>
 -->
-                <div class="form-group" data-depends="{'#InputSelectMulti':{'type':'!equal', 'value':['three','2']}}">
-                    <label for="InputRadioNotEqualArrayCheck">Will Show on Radio checked value not equal Checkbox checked value.</label>
+                <div class="form-group" data-depends="{'#InputSelectMulti':{'type':'!equal', 'value':['option1'], 'empty':false}}">
+                    <label for="InputRadioNotEqualArrayCheck">#InputEmail, input.checkboxes, input.radios, #InputSelectMulti Will Show on Radio checked value not equal Checkbox checked value.</label>
                     <input type="text" class="form-control" id="InputRadioNotEqualArrayCheck" placeholder="__">
                 </div>
 
