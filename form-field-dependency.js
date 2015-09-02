@@ -1,3 +1,5 @@
+'use strict';
+
 (function ($) {
 
     $.fn.formFieldDependency = function (options) {
@@ -24,6 +26,10 @@
                 strict = false;
             }
 
+            if (needleArray == null) {
+                needleArray = [];
+            }
+
             if (strict == true) {
                 if ((needleArray.sort().join(',').toLowerCase()) == (haystackArray.sort().join(',').toLowerCase())) {
                     return true;
@@ -31,7 +37,7 @@
                 return false;
             }
             else {
-                for (i = 0; i < needleArray.length; i++) {
+                for (var i = 0; i < needleArray.length; i++) {
                     if (haystackArray.indexOf(needleArray[i]) >= 0) {
                         return true;
                     }
@@ -399,10 +405,12 @@
             var equalLike = (typeof depObject.like == 'undefined') ? false : true;
             depObject.strict = (typeof depObject.strict == 'undefined') ? false : depObject.strict;
 
+            // show if empty
+            depObject.empty = (typeof depObject.empty == 'undefined') ? true : depObject.empty;
+
+
             if (equalLike) {
 
-                // Allow when both have empty value
-                var showOnEmptyValue = (typeof depObject.empty == 'undefined') ? false : depObject.empty;
 
                 var eqtag = $(depObject.like).prop("tagName").toLowerCase();
                 var eqtype = $(depObject.like).prop("type").toLowerCase();
@@ -412,6 +420,8 @@
                     depObject.value = $(depObject.like + ':checked').map(function () {
                         return this.value;
                     }).get();
+
+
                 }
                 else {
 
@@ -421,7 +431,10 @@
                         depObject.value = ($.trim($(depObject.like).val()) == '') ? null : $(depObject.like).val();
                     }
                 }
+
+
             }
+
 
             switch (name) {
                 case "input:text":
@@ -441,32 +454,64 @@
                         $(element).hide();
                     }
                     else {
-                        $(element).show();
+
+                        if ($.trim(value) == '' && depObject.empty) {
+                            $(element).show();
+                        }
+
+                        if ($.trim(value) != '' && depObject.empty) {
+                            $(element).show();
+                        }
+
+                        if ($.trim(value) != '' && !depObject.empty) {
+                            $(element).show();
+                        }
+
+                        if ($.trim(value) == '' && !depObject.empty) {
+                            $(element).hide();
+                        }
+
                     }
                     break;
 
                 case "input:checkbox":
                 case "input:radio":
 
-                    var value = $(parent + ':checked').map(function () {
+                    value = $(parent + ':checked').map(function () {
                         return this.value;
                     }).get();
+
 
                     if (typeof depObject.strict == 'undefined') {
                         depObject.strict = false;
                     }
 
                     if (value == depObject.value) {
+
                         $(element).hide();
                     }
                     else if (stringInArraysHelper(value, depObject.value)) {
+
                         $(element).hide();
                     }
                     else if (arrayInArraysHelper(value, depObject.value, depObject.strict)) {
+
                         $(element).hide();
                     }
                     else {
-                        $(element).show();
+
+                        if (isEmpty(value) && depObject.empty) {
+                            $(element).show();
+                        }
+
+                        if (!isEmpty(value) && depObject.empty) {
+                            $(element).show();
+                        }
+
+                        if (!isEmpty(value) && !depObject.empty) {
+                            $(element).show();
+                        }
+
                     }
 
                     break;
@@ -477,7 +522,16 @@
                         $(element).hide();
                     }
                     else {
-                        $(element).show();
+                        
+                        if( value==null && depObject.empty ) {
+                            $(element).show();
+                        }
+                        if( value!=null && !depObject.empty ) {
+                            $(element).show();
+                        }
+                        if( value!=null && depObject.empty ) {
+                            $(element).show();
+                        }
                     }
 
                     break;
@@ -775,7 +829,7 @@
         })(settings.rules);
 
         return this.each(function () {
-            $data = JSON.parse($(this).attr(settings.attribute).replace(/'/g, '"'));
+            var $data = JSON.parse($(this).attr(settings.attribute).replace(/'/g, '"'));
             useTypes($(this), $data);
         });
     }
