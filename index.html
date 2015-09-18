@@ -22,7 +22,7 @@
         <header>
             <h1>Form-Field-Dependency</h1>
 
-            <h2>OnFly Simple Form Field Dependency. Conditional Form Fields.</h2>
+            <h2>Simple Form Field Dependency. Conditional Form Fields.</h2>
         </header>
 
         <section id="downloads" class="clearfix">
@@ -56,7 +56,7 @@
 </pre>
 
 
-            <h3>Activate plugin</h3>
+<h3>Activate plugin</h3>
 <pre>
 jQuery(function ($) {
     $('[data-depends]').formFieldDependency();
@@ -75,7 +75,8 @@ jQuery(function ($) {
             <h3>Add your global field rule.</h3>
 
             <p>You can write your field rule globally or on element attribute. Field rule should written in JSON
-                data.</p>
+                data.
+            </p>
 
             <h4>Code: Globally defined like</h4>
 <pre>
@@ -90,17 +91,17 @@ $.fn.formFieldDependency({
     }
 });
 </pre>
-            <h4>Code: On attribute </h4>
+<h4>Code: On attribute </h4>
 <pre>
 $('[data-depends]').formFieldDependency({
 'attribute' : 'data-depends', // Attribute name where you write your roles
 'rules'     : {
-    '#only-email' : {
-        '#InputEmail' : {'type' : 'regexp', 'pattern' : '[a-z]+@[a-z]+.[a-z]', 'modifier' : 'i'}
+    'DependencySelector' : {  // like #id, .class, input[name]
+        'DependsOnSelector' : {'type' : 'regexp', 'pattern' : '[a-z]+@[a-z]+.[a-z]', 'modifier' : 'i'}
     },
-    '#only-equal' :
+    'DependencySelector' :
     {
-        '#InputEmail' : {'type' : 'equal', 'value' : ['lorem', 'ipsum']}
+        'DependsOnSelector' : {'type' : 'equal', 'value' : ['lorem', 'ipsum']}
     }
 }
 });
@@ -109,8 +110,8 @@ $('[data-depends]').formFieldDependency({
             <h3>Options</h3>
 
             <ol>
-                <li><code>attribute</code> on fly rules field attribute. You can write your own html attribute name
-                    where you define your on-fly rule for each field. Default is <code>data-depends</code></li>
+                <li><code>attribute</code> write rules on field attribute. You can write your own html attribute name
+                    where you define your rules for each field. Default is <code>data-depends</code></li>
                 <li><code>rules</code> global rules. You can write global rules.</li>
             </ol>
 
@@ -118,39 +119,23 @@ $('[data-depends]').formFieldDependency({
             <h3>Available Dependency types</h3>
 
 
-<pre>
-{
-   '#exampleInputEmail3' : {'type':'empty'},
-   '#exampleInputEmail3' : {'type':'!empty'},
-   '#exampleInputEmail3' : {'type':'equal', 'value':'b'},
-   '#exampleInputEmail3' : {'type':'equal', 'value':['a', 'b', 'c']},
-   '#exampleInputEmail3' : {'type':'equal', 'value':['a', 'b', 'c'], 'strict':true},
-   '#exampleInputEmail3' : {'type':'equal', 'like':'#exampleInputEmail4', 'strict':true, 'empty':true},
-   '#exampleInputEmail3' : {'type':'!equal', 'value':'a'},
-   '#exampleInputEmail3' : {'type':'!equal', 'value':['a', 'b', 'c']},
-   '#exampleInputEmail3' : {'type':'regexp', 'pattern':'[a-z]+@[a-z]+.[a-z]+', 'modifier':'gi'},
-   '#exampleInputEmail3' : {'type':'compare', 'value':'100', 'sign':'>'}, // > or < or >= or <=
-   '#exampleInputEmail3' : {'type':'length', 'sign':'>', 'value':'100'},
-   '#exampleInputEmail3' : {'type':'range', 'value':['10', '50']},
-   '#exampleInputEmail3' : {'type':'range', 'min':'10', 'max':'50']},
-}
-</pre>
+            <div class="types">
 
-            <div>
+                <p class="title-code"><code>empty</code></p>
 
-                <p><code>empty</code></p>
+                <p>Show dependency field if dependsOn field value is empty.
+                    <br><code>empty</code> type does not require any others attributes.
+                </p>
 
-                <p>Show dependency field if dependsOn field value is empty. Does not require any others attributes.</p>
-
-                <h5>Code: on attribute</h5>
+                <h5>On attribute</h5>
                 <pre>data-depends="[{'#DependsOnSelector' : {'type':'empty'}}]"</pre>
 
-                <h5>Code: on rules</h5>
-            <pre>'rules' : {
-            '#DependencySelector' : {
-                '#DependsOnSelector' : {'type' : 'empty'}
-            }
-           }</pre>
+                <h5>On rules</h5>
+<pre>'rules' : {
+    '#DependencySelector' : {
+        '#DependsOnSelector' : {'type' : 'empty'}
+    }
+}</pre>
 
                 <p><strong>DependsOnSelector</strong> should be a input, checkbox, radio or select box</p>
 
@@ -166,6 +151,7 @@ $('[data-depends]').formFieldDependency({
                         <label for="exampleInput2">This will hide if you write something on Text Box</label>
                         <input type="email" class="form-control" id="exampleInput2" placeholder="">
                     </div>
+
                     <h5>Example Code:</h5>
 <pre>
 &lt;div class=&quot;form-group&quot;&gt;
@@ -182,39 +168,91 @@ $('[data-depends]').formFieldDependency({
             </div>
 
 
-            <br><br>
+            <div class="types">
 
-            <div>
-                <h4>Equal</h4>
+                <p class="title-code"><code>!empty</code><code>notempty</code><code>not-empty</code></p>
 
-                <p>
+                <p>Show Dependency field if DependsOn field value is not empty.
+                    <br>there is many alias of not empty type: <code>!empty</code>, <code>notempty</code>, <code>not-empty</code>, <code>notEmpty</code>.
+                    <br><code>!empty</code> type does not require any others attributes.
+                </p>
+
+                <h5>On attribute</h5>
+                <pre>data-depends="[{'#DependsOnSelector' : {'type':'empty'}}]"</pre>
+
+                <h5>On rules</h5>
+<pre>'rules' : {
+    '#DependencySelector' : {
+        '#DependsOnSelector' : {'type' : '!empty'}
+    }
+}</pre>
+
+                <p><strong>DependsOnSelector</strong> should be a input, checkbox, radio or select box</p>
+
+                <h5>Example Output:</h5>
+
+
+                <div class="form-group">
+                    <label for="exampleInput3">Text Box</label>
+                    <input type="email" name="checkNotEmpty" class="form-control" id="exampleInput3" placeholder="A text box will show if you write something">
+                </div>
+
+                <div class="form-group" data-depends="[{'input[name=checkNotEmpty]':{'type':'!empty'}}]">
+                    <label for="exampleInput4">This will show if you write something on Text Box</label>
+                    <input type="email" class="form-control" id="exampleInput4" placeholder="">
+                </div>
+
+                <h5>Example Code:</h5>
+<pre>
+&lt;div class=&quot;form-group&quot;&gt;
+    &lt;label for=&quot;exampleInput1&quot;&gt;Text Box&lt;/label&gt;
+    &lt;input type=&quot;email&quot; name=&quot;checkNotEmpty&quot; class=&quot;form-control&quot; id=&quot;exampleInput1&quot; placeholder=&quot;&quot;&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;form-group&quot; data-depends=&quot;[{&apos;input[name=checkNotEmpty]&apos;:{&apos;type&apos;:&apos;!empty&apos;}}]&quot;&gt;
+    &lt;label for=&quot;exampleInput2&quot;&gt;This will show if you write something on Text Box&lt;/label&gt;
+    &lt;input type=&quot;email&quot; class=&quot;form-control&quot; id=&quot;exampleInput2&quot; placeholder=&quot;&quot;&gt;
+&lt;/div&gt;
+</pre>
+
+            </div>
+
+
+
+
+            <div class="types">
+
+                <p class="title-code">
                     <code>equal</code>
                     <code>==</code>
                     <code>=</code>
                 </p>
 
-                <p>Show dependency field if dependsOn field value is equal to given value. Define <code>value</code> on
-                    array or on string. Checking type <code>strict</code> to check strictly equal or just match anyone
-                    in array.</p>
+                <p>Show dependency field if dependsOn field value is equal to given value.
+                    <br>Define <code>value</code> on array or on string.
+                    <br>Checking type <code>strict</code> <code>true</code> to check strictly equal or just match anyone
+                    in array.
+                    <br>Default <code>strict</code> value is <code>false</code>
+                    <br>Note: <code>strict</code> value <code>true</code> will effective if you use it on multi select box or multi checkbox.
+                </p>
 
                 <h5>Code: on attribute. </h5>
-                <pre>data-depends="{'#DependsOnField' : {'type':'equal', 'value':'lorem'}}"</pre>
-                <pre>data-depends="{'#DependsOnField' : {'type':'equal', 'value':['lorem', 'ipsum']}}"</pre>
-                <pre>data-depends="{'#DependsOnField' : {'type':'equal', 'value':['lorem', 'ipsum'], 'strict':true}}"</pre>
+                <pre>data-depends="[{'#DependsOnField' : {'type':'equal', 'value':'lorem'}}]"</pre>
+                <pre>data-depends="[{'#DependsOnField' : {'type':'equal', 'value':['lorem', 'ipsum']}}]"</pre>
+                <pre>data-depends="[{'#DependsOnField' : {'type':'equal', 'value':['lorem', 'ipsum'], 'strict':true}}]"</pre>
 
                 </p>
 
 
                 <h5>Example Output:</h5>
 
-                <form>
                     <div class="form-group">
                         <label for="exampleInput5">A box will show if you write "lorem" or "ipsum".</label>
                         <input type="email" name="" class="form-control" id="exampleInput5" placeholder="">
                     </div>
 
                     <div class="form-group"
-                         data-depends="{'#exampleInput5':{'type':'equal', 'value':['lorem','ipsum']}}">
+                         data-depends="[{'#exampleInput5':{'type':'equal', 'value':['lorem','ipsum']}}]">
                         <label for="exampleInput6">Hidden Field</label>
                         <input type="email" class="form-control" id="exampleInput6" placeholder="">
                     </div>
@@ -225,67 +263,15 @@ $('[data-depends]').formFieldDependency({
     &lt;input type=&quot;email&quot; name=&quot;&quot; class=&quot;form-control&quot; id=&quot;exampleInput5&quot; placeholder=&quot;&quot;&gt;
 &lt;/div&gt;
 
-&lt;div class=&quot;form-group&quot; data-depends=&quot;{'#exampleInput5':{'type':'equal', 'value':['lorem','ipsum']}}&quot;&gt;
+&lt;div class=&quot;form-group&quot; data-depends=&quot;[{&apos;#exampleInput5&apos;:{&apos;type&apos;:&apos;equal&apos;, &apos;value&apos;:[&apos;lorem&apos;,&apos;ipsum&apos;]}}]&quot;&gt;
     &lt;label for=&quot;exampleInput6&quot;&gt;Hidden Field&lt;/label&gt;
     &lt;input type=&quot;email&quot; class=&quot;form-control&quot; id=&quot;exampleInput6&quot; placeholder=&quot;&quot;&gt;
 &lt;/div&gt;
 </pre>
-                </form>
+
             </div>
 
 
-            <br><br>
-
-            <div>
-                <h4>Not Empty</h4>
-
-                <p>
-                    <code>!empty</code>
-                    <code>notempty</code>
-                    <code>not-empty</code>
-                    <code>notEmpty</code>
-                </p>
-
-                <p>Show dependency field if dependsOn field value is not empty. Does not require any other
-                    attribute.</p>
-
-                <h5>Code: on attribute</h5>
-                <pre>data-depends="{'#DependsOnField' : {'type':'!empty'}}"</pre>
-
-                <h5>Code: on rules</h5>
-            <pre>'rules' : {
-            '#DependencyField' : {
-                '#DependsOnField' : {'type' : '!empty'}
-            }
-           }</pre>
-                </p>
-
-
-                <h5>Example Output:</h5>
-
-                <form>
-                    <div class="form-group">
-                        <label for="exampleInput3">A box will show if you write something.</label>
-                        <input type="email" name="checkNotEmpty" class="form-control" id="exampleInput3" placeholder="">
-                    </div>
-
-                    <div class="form-group" data-depends="{'#exampleInput3':{'type':'!empty'}}">
-                        <label for="exampleInput4">Hidden Field</label>
-                        <input type="email" class="form-control" id="exampleInput4" placeholder="">
-                    </div>
-                    <h5>Example Code:</h5>
-<pre>
-&lt;div class="form-group">
-    &lt;label for="exampleInput3">A box will show if you write something.&lt;/label>
-    &lt;input type="email" name="checkNotEmpty" class="form-control" id="exampleInput3" placeholder="">
-&lt;/div>
-
-&lt;div class="form-group" data-depends="{'#exampleInput3':{'type':'!empty'}}">
-    &lt;label for="exampleInput4">Hidden Field&lt;/label>
-    &lt;input type="email" class="form-control" id="exampleInput4" placeholder="">
-&lt;/div></pre>
-                </form>
-            </div>
 
 
         </section>

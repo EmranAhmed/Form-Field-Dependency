@@ -1,3 +1,5 @@
+'use strict';
+
 (function ($) {
 
     $.fn.formFieldDependency = function (options) {
@@ -24,6 +26,10 @@
                 strict = false;
             }
 
+            if (needleArray == null) {
+                needleArray = [];
+            }
+
             if (strict == true) {
                 if ((needleArray.sort().join(',').toLowerCase()) == (haystackArray.sort().join(',').toLowerCase())) {
                     return true;
@@ -31,7 +37,7 @@
                 return false;
             }
             else {
-                for (i = 0; i < needleArray.length; i++) {
+                for (var i = 0; i < needleArray.length; i++) {
                     if (haystackArray.indexOf(needleArray[i]) >= 0) {
                         return true;
                     }
@@ -78,11 +84,9 @@
 
             if (typeof value == 'object') {
                 if ($.isArray(value)) {
-                    //var _tmp = [];
                     var _tmp = $.map(value, function (val, i) {
                         return ($.trim(val) == '') ? null : val;
                     });
-
                     return $.isEmptyObject(_tmp);
                 }
                 else {
@@ -289,12 +293,12 @@
 
             var equalLike = (typeof depObject.like == 'undefined') ? false : true;
 
+            // show if empty?. default false
+            depObject.empty = (typeof depObject.empty == 'undefined') ? false : depObject.empty;
+
             depObject.strict = (typeof depObject.strict == 'undefined') ? false : depObject.strict;
 
             if (equalLike) {
-
-                // Allow when both have empty value
-                var showOnEmptyValue = (typeof depObject.empty == 'undefined') ? false : depObject.empty;
 
                 var eqtag = $(depObject.like).prop("tagName").toLowerCase();
                 var eqtype = $(depObject.like).prop("type").toLowerCase();
@@ -333,9 +337,12 @@
                         $(element).show();
                     }
                     else {
-                        $(element).hide();
+                        if( $.trim(value)=='' && depObject.empty ){
+                            $(element).show();
+                        }else{
+                            $(element).hide();
+                        }
                     }
-
                     break;
 
                 case "input:checkbox":
@@ -344,6 +351,8 @@
                     var value = $(parent + ':checked').map(function () {
                         return this.value;
                     }).get();
+
+
 
                     if (value == depObject.value) {
                         $(element).show();
@@ -355,7 +364,12 @@
                         $(element).show();
                     }
                     else {
-                        $(element).hide();
+                        console.log(value, depObject.empty);
+                        if( isEmpty(value) &&  depObject.empty){
+                            $(element).show();
+                        } else {
+                            $(element).hide();
+                        }
                     }
                     break;
 
@@ -365,7 +379,12 @@
                         $(element).show();
                     }
                     else {
-                        $(element).hide();
+
+                        if( value==null && depObject.empty ){
+                            $(element).show();
+                        } else{
+                            $(element).hide();
+                        }
                     }
                     break;
             }
@@ -399,10 +418,10 @@
             var equalLike = (typeof depObject.like == 'undefined') ? false : true;
             depObject.strict = (typeof depObject.strict == 'undefined') ? false : depObject.strict;
 
-            if (equalLike) {
+            // show if empty? default is true
+            depObject.empty = (typeof depObject.empty == 'undefined') ? true : depObject.empty;
 
-                // Allow when both have empty value
-                var showOnEmptyValue = (typeof depObject.empty == 'undefined') ? false : depObject.empty;
+            if (equalLike) {
 
                 var eqtag = $(depObject.like).prop("tagName").toLowerCase();
                 var eqtype = $(depObject.like).prop("type").toLowerCase();
@@ -423,6 +442,7 @@
                 }
             }
 
+
             switch (name) {
                 case "input:text":
                 case "input:password":
@@ -441,32 +461,44 @@
                         $(element).hide();
                     }
                     else {
-                        $(element).show();
+                        if ($.trim(value) == '' && !depObject.empty) {
+                            $(element).hide();
+                        } else {
+                            $(element).show();
+                        }
                     }
                     break;
 
                 case "input:checkbox":
                 case "input:radio":
 
-                    var value = $(parent + ':checked').map(function () {
+                    value = $(parent + ':checked').map(function () {
                         return this.value;
                     }).get();
+
 
                     if (typeof depObject.strict == 'undefined') {
                         depObject.strict = false;
                     }
 
                     if (value == depObject.value) {
+
                         $(element).hide();
                     }
                     else if (stringInArraysHelper(value, depObject.value)) {
+
                         $(element).hide();
                     }
                     else if (arrayInArraysHelper(value, depObject.value, depObject.strict)) {
+
                         $(element).hide();
                     }
                     else {
-                        $(element).show();
+                        if (isEmpty(value) && !depObject.empty) {
+                            $(element).hide();
+                        }else{
+                            $(element).show();
+                        }
                     }
 
                     break;
@@ -475,9 +507,12 @@
 
                     if (arrayInArraysHelper(value, depObject.value, depObject.strict)) {
                         $(element).hide();
-                    }
-                    else {
-                        $(element).show();
+                    } else {
+                        if( value==null && !depObject.empty ) {
+                            $(element).hide();
+                        }else{
+                            $(element).show();
+                        }
                     }
 
                     break;
@@ -775,8 +810,11 @@
         })(settings.rules);
 
         return this.each(function () {
-            $data = JSON.parse($(this).attr(settings.attribute).replace(/'/g, '"'));
-            useTypes($(this), $data);
+            var $data = JSON.parse($(this).attr(settings.attribute).replace(/'/g, '"'));
+            var that = $(this);
+            $.each($data, function(el, obj){
+                useTypes(that, obj);
+            });
         });
     }
 })(jQuery);

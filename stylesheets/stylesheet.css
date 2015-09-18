@@ -84,6 +84,10 @@ header h2 {
   letter-spacing: -1px;
 }
 
+h5{
+  font-weight: bold;
+  }
+
 #container {
   min-height: 595px;
   background: transparent url(../images/highlight-bg.jpg) 50% 0 no-repeat;
@@ -365,6 +369,17 @@ footer a:hover {
     margin: 0 auto;
   }
 }
+
+.types{
+  padding: 20px 0;
+  border-bottom: 1px solid #212021;
+  }
+
+.title-code code{
+  font-size: 20px;
+  padding: 5px;
+  margin: 10px;
+  }
 
 /* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
 @media only screen and (min-width: 480px) and (max-width: 767px) { }
