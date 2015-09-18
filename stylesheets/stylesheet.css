@@ -12,7 +12,7 @@ dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
+figure, figcaption, footer, header,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
 	padding: 0;
@@ -24,7 +24,7 @@ time, mark, audio, video {
 }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
+footer, header, menu, nav, section {
 	display: block;
 }
 body {
@@ -94,7 +94,7 @@ h5{
 }
 
 .inner {
-  width: 620px;
+  width: 650px;
   margin: 0 auto;
 }
 
@@ -109,7 +109,7 @@ h5{
 a.button {
   display: block;
   float: left;
-  width: 179px;
+  width: 200px;
   padding: 12px 8px 12px 8px;
   margin-right: 14px;
   font-size: 15px;
@@ -177,7 +177,7 @@ code, pre {
 }
 
 code {
-  padding: 0 3px;
+  padding: 5px;
   background-color: #f2f2f2;
   border: solid 1px #ddd;
 }
@@ -266,16 +266,19 @@ h4 {
   font-size: 16px;
   font-weight: bold;
   color: #303030;
+  margin: 10px 0;
 }
 
 h5 {
   font-size: 1em;
   color: #303030;
+  margin: 10px 0;
 }
 
 h6 {
   font-size: .8em;
   color: #303030;
+  margin: 10px 0;
 }
 
 p {
@@ -372,13 +375,13 @@ footer a:hover {
 
 .types{
   padding: 20px 0;
-  border-bottom: 1px solid #212021;
+
   }
 
 .title-code code{
   font-size: 20px;
   padding: 5px;
-  margin: 10px;
+  margin: 10px 5px;
   }
 
 /* Mobile Landscape Size to Tablet Portrait (devices and browsers) */

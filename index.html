@@ -123,9 +123,9 @@ $('[data-depends]').formFieldDependency({
 
                 <p class="title-code"><code>empty</code></p>
 
-                <p>Show dependency field if dependsOn field value is empty.
-                    <br><code>empty</code> type does not require any others attributes.
-                </p>
+                <p>Show dependency field if dependsOn field value is empty.</p>
+
+                <p><code>empty</code> type does not require any others attributes.</p>
 
                 <h5>On attribute</h5>
                 <pre>data-depends="[{'#DependsOnSelector' : {'type':'empty'}}]"</pre>
@@ -167,15 +167,17 @@ $('[data-depends]').formFieldDependency({
 
             </div>
 
+            <hr>
+
 
             <div class="types">
 
                 <p class="title-code"><code>!empty</code><code>notempty</code><code>not-empty</code></p>
 
-                <p>Show Dependency field if DependsOn field value is not empty.
-                    <br>there is many alias of not empty type: <code>!empty</code>, <code>notempty</code>, <code>not-empty</code>, <code>notEmpty</code>.
-                    <br><code>!empty</code> type does not require any others attributes.
-                </p>
+                <p>Show Dependency field if DependsOn field value is not empty. </p>
+                <p>There is many alias of not empty type: <code>!empty</code>, <code>notempty</code>, <code>not-empty</code>, <code>notEmpty</code>.</p>
+                <p><code>!empty</code> type does not require any others attributes.</p>
+
 
                 <h5>On attribute</h5>
                 <pre>data-depends="[{'#DependsOnSelector' : {'type':'empty'}}]"</pre>
@@ -218,7 +220,7 @@ $('[data-depends]').formFieldDependency({
             </div>
 
 
-
+            <hr>
 
             <div class="types">
 
@@ -228,13 +230,13 @@ $('[data-depends]').formFieldDependency({
                     <code>=</code>
                 </p>
 
-                <p>Show dependency field if dependsOn field value is equal to given value.
-                    <br>Define <code>value</code> on array or on string.
-                    <br>Checking type <code>strict</code> <code>true</code> to check strictly equal or just match anyone
-                    in array.
-                    <br>Default <code>strict</code> value is <code>false</code>
-                    <br>Note: <code>strict</code> value <code>true</code> will effective if you use it on multi select box or multi checkbox.
-                </p>
+                <p>Show dependency field if dependsOn field value is equal to given value. </p>
+                    <p>Define <code>value</code> on array or on string.</p>
+                    <p>Checking type <code>strict</code> <code>true</code> to check strictly equal or just match anyone
+                    in array.</p>
+                    <p>Default <code>strict</code> value is <code>false</code></p>
+                    <p>Note: <code>strict</code> value <code>true</code> will effective if you use it on multiple select or checkbox.</p>
+
 
                 <h5>Code: on attribute. </h5>
                 <pre>data-depends="[{'#DependsOnField' : {'type':'equal', 'value':'lorem'}}]"</pre>
@@ -244,7 +246,7 @@ $('[data-depends]').formFieldDependency({
                 </p>
 
 
-                <h5>Example Output:</h5>
+                <h5>Example 1:</h5>
 
                     <div class="form-group">
                         <label for="exampleInput5">A box will show if you write "lorem" or "ipsum".</label>
@@ -256,6 +258,47 @@ $('[data-depends]').formFieldDependency({
                         <label for="exampleInput6">Hidden Field</label>
                         <input type="email" class="form-control" id="exampleInput6" placeholder="">
                     </div>
+
+                <h5>Example 2 with checkbox:</h5>
+
+                <div class="form-group">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" class="system-checkboxes" id="inlineCheckboxs1" value="option1"> System 1
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" class="system-checkboxes" id="inlineCheckboxs2" value="option2"> System 2
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" class="system-checkboxes" id="inlineCheckboxs3" value="option3"> System 3
+                    </label>
+                </div>
+
+                <div class="form-group"
+                     data-depends="[{'input.system-checkboxes':{'type':'equal', 'value':['option2','option3']}}]">
+                    <label for="exampleInput7">Checkbox Hidden Field</label>
+                    <input type="email" class="form-control" id="exampleInput7" placeholder="">
+                </div>
+
+                <h5>Example 2 with checkbox <code>strict</code> <code>true</code></h5>
+
+                <div class="form-group">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" class="system2-checkboxes" id="inlineCheckboxs4" value="option1"> System 1
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" class="system2-checkboxes" id="inlineCheckboxs5" value="option2"> System 2
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" class="system2-checkboxes" id="inlineCheckboxs6" value="option3"> System 3
+                    </label>
+                </div>
+
+                <div class="form-group"
+                     data-depends="[{'input.system22-checkboxes':{'type':'equal', 'value':['option2','option3']}}]">
+                    <label for="exampleInput7">Checkbox Hidden Field</label>
+                    <input type="email" class="form-control" id="exampleInput8" placeholder="">
+                </div>
+
                     <h5>Example Code:</h5>
 <pre>
 &lt;div class=&quot;form-group&quot;&gt;
@@ -271,7 +314,7 @@ $('[data-depends]').formFieldDependency({
 
             </div>
 
-
+            <hr>
 
 
         </section>

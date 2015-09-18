@@ -107,6 +107,11 @@
             if (typeof useEvent == 'undefined') {
                 useEvent = false;
             }
+
+            if( typeof $(parent).prop("tagName")=='undefined' ){
+                return false;
+            }
+
             var tag = $(parent).prop("tagName").toLowerCase();
             var type = $(parent).prop("type").toLowerCase();
             var name = tag + ':' + type;
@@ -155,6 +160,11 @@
             if (typeof useEvent == 'undefined') {
                 useEvent = false;
             }
+
+            if( typeof $(parent).prop("tagName")=='undefined' ){
+                return false;
+            }
+
             var tag = $(parent).prop("tagName").toLowerCase();
             var type = $(parent).prop("type").toLowerCase();
             var name = tag + ':' + type;
@@ -220,6 +230,11 @@
             if (typeof useEvent == 'undefined') {
                 useEvent = false;
             }
+
+            if( typeof $(parent).prop("tagName")=='undefined' ){
+                return false;
+            }
+
             var tag = $(parent).prop("tagName").toLowerCase();
             var type = $(parent).prop("type").toLowerCase();
             var name = tag + ':' + type;
@@ -284,6 +299,10 @@
 
             if (typeof useEvent == 'undefined') {
                 useEvent = false;
+            }
+
+            if( typeof $(parent).prop("tagName")=='undefined' ){
+                return false;
             }
 
             var tag = $(parent).prop("tagName").toLowerCase();
@@ -364,7 +383,6 @@
                         $(element).show();
                     }
                     else {
-                        console.log(value, depObject.empty);
                         if( isEmpty(value) &&  depObject.empty){
                             $(element).show();
                         } else {
@@ -410,6 +428,11 @@
             if (typeof useEvent == 'undefined') {
                 useEvent = false;
             }
+
+            if( typeof $(parent).prop("tagName")=='undefined' ){
+                return false;
+            }
+
             var tag = $(parent).prop("tagName").toLowerCase();
             var type = $(parent).prop("type").toLowerCase();
             var name = tag + ':' + type;
@@ -539,6 +562,11 @@
             if (typeof useEvent == 'undefined') {
                 useEvent = false;
             }
+
+            if( typeof $(parent).prop("tagName")=='undefined' ){
+                return false;
+            }
+
             var tag = $(parent).prop("tagName").toLowerCase();
             var type = $(parent).prop("type").toLowerCase();
             var name = tag + ':' + type;
@@ -623,6 +651,11 @@
             if (typeof useEvent == 'undefined') {
                 useEvent = false;
             }
+
+            if( typeof $(parent).prop("tagName")=='undefined' ){
+                return false;
+            }
+
             var tag = $(parent).prop("tagName").toLowerCase();
             var type = $(parent).prop("type").toLowerCase();
             var name = tag + ':' + type;
@@ -671,6 +704,11 @@
             if (typeof useEvent == 'undefined') {
                 useEvent = false;
             }
+
+            if( typeof $(parent).prop("tagName")=='undefined' ){
+                return false;
+            }
+
             var tag = $(parent).prop("tagName").toLowerCase();
             var type = $(parent).prop("type").toLowerCase();
             var name = tag + ':' + type;
