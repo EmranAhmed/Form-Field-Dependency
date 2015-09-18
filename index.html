@@ -260,6 +260,7 @@ $('[data-depends]').formFieldDependency({
                     </div>
 
                 <h5>Example 2 with checkbox:</h5>
+                <p>Check system 2 or system 3</p>
 
                 <div class="form-group">
                     <label class="checkbox-inline">
@@ -275,11 +276,12 @@ $('[data-depends]').formFieldDependency({
 
                 <div class="form-group"
                      data-depends="[{'input.system-checkboxes':{'type':'equal', 'value':['option2','option3']}}]">
-                    <label for="exampleInput7">Checkbox Hidden Field</label>
+                    <label for="exampleInput7">Shown if system 2 or system 3 checked.</label>
                     <input type="email" class="form-control" id="exampleInput7" placeholder="">
                 </div>
 
                 <h5>Example 2 with checkbox <code>strict</code> <code>true</code></h5>
+                <p>Check system 2 and system 3</p>
 
                 <div class="form-group">
                     <label class="checkbox-inline">
@@ -294,8 +296,8 @@ $('[data-depends]').formFieldDependency({
                 </div>
 
                 <div class="form-group"
-                     data-depends="[{'input.system22-checkboxes':{'type':'equal', 'value':['option2','option3']}}]">
-                    <label for="exampleInput7">Checkbox Hidden Field</label>
+                     data-depends="[{'input.system2-checkboxes':{'type':'equal', 'value':['option2','option3'], 'strict':true}}]">
+                    <label for="exampleInput7">Shown if system 2 and system 3 checked</label>
                     <input type="email" class="form-control" id="exampleInput8" placeholder="">
                 </div>
 
