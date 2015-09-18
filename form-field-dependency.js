@@ -84,11 +84,9 @@
 
             if (typeof value == 'object') {
                 if ($.isArray(value)) {
-                    //var _tmp = [];
                     var _tmp = $.map(value, function (val, i) {
                         return ($.trim(val) == '') ? null : val;
                     });
-
                     return $.isEmptyObject(_tmp);
                 }
                 else {
@@ -339,14 +337,12 @@
                         $(element).show();
                     }
                     else {
-
                         if( $.trim(value)=='' && depObject.empty ){
                             $(element).show();
                         }else{
                             $(element).hide();
                         }
                     }
-
                     break;
 
                 case "input:checkbox":
@@ -425,9 +421,7 @@
             // show if empty? default is true
             depObject.empty = (typeof depObject.empty == 'undefined') ? true : depObject.empty;
 
-
             if (equalLike) {
-
 
                 var eqtag = $(depObject.like).prop("tagName").toLowerCase();
                 var eqtype = $(depObject.like).prop("type").toLowerCase();
@@ -437,8 +431,6 @@
                     depObject.value = $(depObject.like + ':checked').map(function () {
                         return this.value;
                     }).get();
-
-
                 }
                 else {
 
@@ -448,8 +440,6 @@
                         depObject.value = ($.trim($(depObject.like).val()) == '') ? null : $(depObject.like).val();
                     }
                 }
-
-
             }
 
 

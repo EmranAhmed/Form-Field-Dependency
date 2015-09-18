@@ -21,11 +21,11 @@
                     <input type="text" class="form-control" id="InputEmail" placeholder="Email">
                 </div>
 
-                <!--<div class="form-group dependency-field" id="only-email" data-depends="[{'#InputEmail':{'type':'regexp', 'pattern':'[a-z]+@[a-z]+.[a-z]', 'modifier':'i'}}]">
+                <div class="form-group dependency-field" id="only-email">
                     <label for="InputValidRegExpString">Will Show On Email address is valid.</label>
-                    <input type="text" class="form-control" id="InputValidRegExpString" placeholder="">
+                    <input type="text" class="form-control" id="InputValidRegExpString" placeholder="Wow email is valid">
                 </div>
-
+<!--
                 <div class="form-group dependency-field" id="only-equal" data-depends="[{'#InputEmail':{'type':'equal', 'value':'lorem'}}]">
                     <label for="InputNonArrayString">Will Show On Email field filledUp with 'lorem'. Non Array</label>
                     <input type="text" class="form-control" id="InputNonArrayString" placeholder="">
@@ -294,7 +294,7 @@
 </div>
 
 <!--
-               [{
+               {
 
                    '#exampleInputEmail3' : {'type':'empty'},
                    '#exampleInputEmail3' : {'type':'!empty'},
@@ -317,7 +317,7 @@
                    '#exampleInputEmail3' : {'type':'range', 'value':['10', '50']},
                    '#exampleInputEmail3' : {'type':'range', 'min':'10', 'max':'50']},
 
-               }]
+               }
                -->
 </body>
 </html>
