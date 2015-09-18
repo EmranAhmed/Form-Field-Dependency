@@ -821,7 +821,10 @@
 
         return this.each(function () {
             var $data = JSON.parse($(this).attr(settings.attribute).replace(/'/g, '"'));
-            useTypes($(this), $data);
+            var that = $(this);
+            $.each($data, function(el, obj){
+                useTypes(that, obj);
+            });
         });
     }
 })(jQuery);
