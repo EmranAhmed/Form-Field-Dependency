@@ -2,16 +2,39 @@
 
 (function ($) {
 
-    $.fn.formFieldDependency = function (options) {
+    /**
+     * Use on your css file
+     *
+     [data-gwpdepends].has-dependent-data {
+    display : none;
+    }
+
+     [data-gwpdepends].has-dependent-data.show {
+    display : inherit;
+    }
+
+     [data-gwpdepends].has-dependent-data:not(.show) {
+    display : none;
+    }
+
+     [data-gwpdepends].has-dependent-data.hide {
+    display : none;
+    }
+
+     *
+     * @param options
+     * @constructor
+     */
+    $.fn.FormFieldDependency = function (options) {
 
         /**
          * Plugin Settings
          * @type {void|*}
          */
         var settings = $.extend({
-            'attribute' : 'data-depends',
+            'attribute' : 'depends', // data-depends="[...]"
             'rules'     : {}
-        }, options);
+        }, options)
 
         /**
          * Check array exists on array
@@ -23,28 +46,25 @@
         var arrayInArraysHelper = function (needleArray, haystackArray, strict) {
 
             if (typeof strict == 'undefined') {
-                strict = false;
+                strict = false
             }
 
             if (needleArray == null) {
-                needleArray = [];
+                needleArray = []
             }
 
-            if (strict == true) {
-                if ((needleArray.sort().join(',').toLowerCase()) == (haystackArray.sort().join(',').toLowerCase())) {
-                    return true;
-                }
-                return false;
+            if (strict === true) {
+                return (needleArray.sort().join(',').toLowerCase() === haystackArray.sort().join(',').toLowerCase())
             }
             else {
                 for (var i = 0; i < needleArray.length; i++) {
                     if (haystackArray.indexOf(needleArray[i]) >= 0) {
-                        return true;
+                        return true
                     }
                 }
-                return false;
+                return false
             }
-        };
+        }
 
         /**
          * Check string exist on array value
@@ -53,14 +73,16 @@
          * @returns {boolean}
          */
         var stringInArraysHelper = function (needleString, haystackArray) {
+            return ($.inArray(needleString, haystackArray) >= 0) && $.isArray(haystackArray)
+        }
 
-            if (($.inArray(needleString, haystackArray) >= 0) && $.isArray(haystackArray)) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        };
+        var show = function (element) {
+            $(element).removeClass('hide').addClass('show')
+        }
+
+        var hide = function (element) {
+            $(element).removeClass('show').addClass('hide')
+        }
 
         /**
          * Check value is empty or not
@@ -71,29 +93,25 @@
         var isEmpty = function (value) {
 
             if (typeof value == 'null' || typeof value == 'undefined') {
-                return true;
+                return true
             }
 
             if (typeof value == 'string') {
-                return ($.trim(value) == '') ? true : false;
-            }
-
-            if (typeof value == 'string') {
-                return ($.trim(value) == '') ? true : false;
+                return value.trim() == ''
             }
 
             if (typeof value == 'object') {
                 if ($.isArray(value)) {
                     var _tmp = $.map(value, function (val, i) {
-                        return ($.trim(val) == '') ? null : val;
-                    });
-                    return $.isEmptyObject(_tmp);
+                        return (val.trim() == '') ? null : val
+                    })
+                    return $.isEmptyObject(_tmp)
                 }
                 else {
-                    return $.isEmptyObject(value);
+                    return $.isEmptyObject(value)
                 }
             }
-        };
+        }
 
         /**
          * For Regular Expression Dependency
@@ -105,47 +123,48 @@
         var typeRegExpDependency = function (element, depObject, parent, useEvent) {
 
             if (typeof useEvent == 'undefined') {
-                useEvent = false;
+                useEvent = false
             }
 
-            if( typeof $(parent).prop("tagName")=='undefined' ){
-                return false;
+            if (typeof $(parent).prop('tagName') == 'undefined') {
+                return false
             }
 
-            var tag = $(parent).prop("tagName").toLowerCase();
-            var type = $(parent).prop("type").toLowerCase();
-            var name = tag + ':' + type;
-            var value = $.trim($(parent).val());
+            var tag   = $(parent).prop('tagName').toLowerCase()
+            var type  = $(parent).prop('type').toLowerCase()
+            var name  = tag + ':' + type
+            var value = $(parent).val().trim()
 
             switch (name) {
-                case "input:text":
-                case "input:password":
-                case "input:number":
-                case "input:date":
-                case "input:email":
-                case "input:url":
-                case "input:tel":
-                case "textarea:textarea":
+                case 'input:text':
+                case 'input:password':
+                case 'input:number':
+                case 'input:date':
+                case 'input:email':
+                case 'input:url':
+                case 'input:tel':
+                case 'textarea:textarea':
 
-                    var modifier = ( typeof depObject.modifier == 'undefined' ) ? '' : depObject.modifier;
-                    var pattern = new RegExp(depObject.pattern, modifier);
+                    var modifier = (typeof depObject.modifier == 'undefined') ? '' : depObject.modifier
+                    var pattern  = new RegExp(depObject.pattern, modifier)
 
                     if (pattern.test(value)) {
-                        $(element).show();
+                        show(element)
+                        // $(element).addClass('show')
                     }
                     else {
-                        $(element).hide();
+                        hide(element)
+                        //$(element).removeClass('show')
                     }
-                    break;
+                    break
             }
 
             if (useEvent) {
-                $(document.body).on('keyup', $(parent), function (e) {
-                    e.stopPropagation();
-                    typeRegExpDependency(element, depObject, parent, false);
-                });
+                $(document.body).on('input', $(parent), function (e) {
+                    typeRegExpDependency(element, depObject, parent, false)
+                })
             }
-        };
+        }
 
         /**
          * For Empty TextBox
@@ -156,67 +175,71 @@
          */
         var typeEmptyDependency = function (element, depObject, parent, useEvent) {
 
-
             if (typeof useEvent == 'undefined') {
-                useEvent = false;
+                useEvent = false
             }
 
-            if( typeof $(parent).prop("tagName")=='undefined' ){
-                return false;
+            if (typeof $(parent).prop('tagName') == 'undefined') {
+                return false
             }
 
-            var tag = $(parent).prop("tagName").toLowerCase();
-            var type = $(parent).prop("type").toLowerCase();
-            var name = tag + ':' + type;
-            var value = $(parent).val();
+            var tag   = $(parent).prop('tagName').toLowerCase()
+            var type  = $(parent).prop('type').toLowerCase()
+            var name  = tag + ':' + type
+            var value = $(parent).val()
 
             switch (name) {
-                case "input:text":
-                case "input:password":
-                case "input:number":
-                case "input:date":
-                case "input:email":
-                case "input:url":
-                case "input:tel":
-                case "textarea:textarea":
-                case "select:select-one":
+                case 'input:text':
+                case 'input:password':
+                case 'input:number':
+                case 'input:date':
+                case 'input:email':
+                case 'input:url':
+                case 'input:tel':
+                case 'textarea:textarea':
+                case 'select:select-one':
 
-                    if ($.trim(value) == '') {
-                        $(element).show();
+                    if (value.trim() === '') {
+                        // $(element).show()
+                        show(element)
                     }
                     else {
-                        $(element).hide();
+                        // $(element).hide()
+                        hide(element)
                     }
-                    break;
+                    break
 
-                case "input:checkbox":
-                    if ($(parent).is(':checked') && $.trim(value) != '') {
-                        $(element).hide();
+                case 'input:checkbox':
+                    if ($(parent).is(':checked') && value.trim() !== '') {
+                        // $(element).hide()
+                        hide(element)
                     }
                     else {
-                        $(element).show();
+                        // $(element).show()
+                        show(element)
                     }
-                    break;
+                    break
 
-                case "select:select-multiple":
+                case 'select:select-multiple':
 
                     if (isEmpty(value)) {
-                        $(element).show();
+                        // $(element).show()
+                        show(element)
                     }
                     else {
-                        $(element).hide();
+                        hide(element)
+                        // $(element).hide()
                     }
 
-                    break;
+                    break
             }
 
             if (useEvent) {
-                $(document.body).on('keyup change', $(parent), function (e) {
-                    e.stopPropagation();
-                    typeEmptyDependency(element, depObject, parent, false);
-                });
+                $(document.body).on('input change', $(parent), function (e) {
+                    typeEmptyDependency(element, depObject, parent, false)
+                })
             }
-        };
+        }
 
         /**
          * For non empty TextBox
@@ -228,65 +251,70 @@
         var typeNotEmptyDependency = function (element, depObject, parent, useEvent) {
 
             if (typeof useEvent == 'undefined') {
-                useEvent = false;
+                useEvent = false
             }
 
-            if( typeof $(parent).prop("tagName")=='undefined' ){
-                return false;
+            if (typeof $(parent).prop('tagName') == 'undefined') {
+                return false
             }
 
-            var tag = $(parent).prop("tagName").toLowerCase();
-            var type = $(parent).prop("type").toLowerCase();
-            var name = tag + ':' + type;
-            var value = $(parent).val();
+            var tag   = $(parent).prop('tagName').toLowerCase()
+            var type  = $(parent).prop('type').toLowerCase()
+            var name  = tag + ':' + type
+            var value = $(parent).val()
 
             switch (name) {
-                case "input:text":
-                case "input:password":
-                case "input:number":
-                case "input:date":
-                case "input:email":
-                case "input:url":
-                case "input:tel":
-                case "textarea:textarea":
-                case "select:select-one":
+                case 'input:text':
+                case 'input:password':
+                case 'input:number':
+                case 'input:date':
+                case 'input:email':
+                case 'input:url':
+                case 'input:tel':
+                case 'textarea:textarea':
+                case 'select:select-one':
 
-                    if ($.trim(value) != '') {
-                        $(element).show();
+                    if (value.trim() !== '') {
+                        show(element)
+                        //$(element).show()
                     }
                     else {
-                        $(element).hide();
+                        hide(element)
+                        //$(element).hide()
                     }
-                    break;
+                    break
 
-                case "input:checkbox":
-                    if ($(parent).is(':checked') && $.trim(value) != '') {
-                        $(element).show();
+                case 'input:checkbox':
+                    if ($(parent).is(':checked') && value.trim() !== '') {
+                        // $(element).show()
+                        show(element)
                     }
                     else {
-                        $(element).hide();
+                        hide(element)
+                        // $(element).hide()
                     }
-                    break;
+                    break
 
-                case "select:select-multiple":
+                case 'select:select-multiple':
 
                     if (isEmpty(value)) {
-                        $(element).hide();
+                        hide(element)
+                        // $(element).hide()
                     }
                     else {
-                        $(element).show();
+                        show(element)
+                        //$(element).show()
                     }
 
-                    break;
+                    break
             }
 
             if (useEvent) {
-                $(document.body).on('keyup change', $(parent), function (e) {
-                    e.stopPropagation();
-                    typeNotEmptyDependency(element, depObject, parent, false);
-                });
+                $(document.body).on('input change', $(parent), function (e) {
+                    typeNotEmptyDependency(element, depObject, parent, false)
+                })
             }
-        };
+        }
 
         /**
          * TextBox value matched with value or with array values
@@ -298,123 +326,135 @@
         var typeEqualDependency = function (element, depObject, parent, useEvent) {
 
             if (typeof useEvent == 'undefined') {
-                useEvent = false;
+                useEvent = false
             }
 
-            if( typeof $(parent).prop("tagName")=='undefined' ){
-                return false;
+            if (typeof $(parent).prop('tagName') == 'undefined') {
+                return false
             }
 
-            var tag = $(parent).prop("tagName").toLowerCase();
-            var type = $(parent).prop("type").toLowerCase();
-            var name = tag + ':' + type;
-            var value = $(parent).val();
+            var tag   = $(parent).prop('tagName').toLowerCase()
+            var type  = $(parent).prop('type').toLowerCase()
+            var name  = tag + ':' + type
+            var value = $(parent).val()
 
-            var equalLike = (typeof depObject.like == 'undefined') ? false : true;
+            var equalLike = (typeof depObject.like !== 'undefined');
 
             // show if empty?. default false
-            depObject.empty = (typeof depObject.empty == 'undefined') ? false : depObject.empty;
+            depObject.empty = (typeof depObject.empty == 'undefined') ? false : depObject.empty
 
-            depObject.strict = (typeof depObject.strict == 'undefined') ? false : depObject.strict;
+            depObject.strict = (typeof depObject.strict == 'undefined') ? false : depObject.strict
 
             if (equalLike) {
 
-                var eqtag = $(depObject.like).prop("tagName").toLowerCase();
-                var eqtype = $(depObject.like).prop("type").toLowerCase();
-                var eqname = eqtag + ':' + eqtype;
+                var eqtag  = $(depObject.like).prop('tagName').toLowerCase()
+                var eqtype = $(depObject.like).prop('type').toLowerCase()
+                var eqname = eqtag + ':' + eqtype
 
-                if (eqname == 'input:checkbox' || eqname == 'input:radio') {
+                if (eqname === 'input:checkbox' || eqname === 'input:radio') {
                     depObject.value = $(depObject.like + ':checked').map(function () {
-                        return this.value;
-                    }).get();
+                        return this.value
+                    }).get()
                 }
                 else {
 
-                    depObject.value = $(depObject.like).val();
+                    depObject.value = $(depObject.like).val()
 
                     if (!showOnEmptyValue) {
-                        depObject.value = ($.trim($(depObject.like).val()) == '') ? null : $(depObject.like).val();
+                        depObject.value = ($(depObject.like).val().trim() === '') ? null : $(depObject.like).val()
                     }
                 }
             }
 
             switch (name) {
-                case "input:text":
-                case "input:password":
-                case "input:number":
-                case "input:date":
-                case "input:email":
-                case "input:url":
-                case "input:tel":
-                case "textarea:textarea":
-                case "select:select-one":
+                case 'input:text':
+                case 'input:password':
+                case 'input:number':
+                case 'input:date':
+                case 'input:email':
+                case 'input:url':
+                case 'input:tel':
+                case 'textarea:textarea':
+                case 'select:select-one':
 
-                    if ($.trim(value) == depObject.value) {
-                        $(element).show();
+                    if (value.trim() === depObject.value) {
+                        //$(element).show()
+                        show(element)
                     }
                     else if (stringInArraysHelper(value, depObject.value)) {
-                        $(element).show();
+                        //$(element).show()
+                        show(element)
                     }
                     else {
-                        if( $.trim(value)=='' && depObject.empty ){
-                            $(element).show();
-                        }else{
-                            $(element).hide();
+                        if (value.trim() === '' && depObject.empty) {
+                            // $(element).show()
+                            show(element)
+                        }
+                        else {
+                            // $(element).hide()
+                            hide(element)
                         }
                     }
-                    break;
+                    break
 
-                case "input:checkbox":
-                case "input:radio":
+                case 'input:checkbox':
+                case 'input:radio':
 
                     var value = $(parent + ':checked').map(function () {
-                        return this.value;
-                    }).get();
+                        return this.value
+                    }).get()
 
-
-
-                    if (value == depObject.value) {
-                        $(element).show();
+                    if (value === depObject.value) {
+                        // $(element).show()
+                        show(element)
                     }
                     else if (stringInArraysHelper(value, depObject.value)) {
-                        $(element).show();
+                        // $(element).show()
+                        show(element)
                     }
                     else if (arrayInArraysHelper(value, depObject.value, depObject.strict)) {
-                        $(element).show();
+                        // $(element).show()
+                        show(element)
                     }
                     else {
-                        if( isEmpty(value) &&  depObject.empty){
-                            $(element).show();
-                        } else {
-                            $(element).hide();
+                        if (isEmpty(value) && depObject.empty) {
+                            // $(element).show()
+                            show(element)
+                        }
+                        else {
+                            // $(element).hide()
+                            hide(element)
                         }
                     }
-                    break;
+                    break
 
-                case "select:select-multiple":
+                case 'select:select-multiple':
 
                     if (arrayInArraysHelper(value, depObject.value, depObject.strict)) {
-                        $(element).show();
+                        //$(element).show()
+                        show(element)
                     }
                     else {
 
-                        if( value==null && depObject.empty ){
-                            $(element).show();
-                        } else{
-                            $(element).hide();
+                        if (value == null && depObject.empty) {
+                            //$(element).show()
+                            show(element)
+                        }
+                        else {
+                            hide(element)
+                            //$(element).hide()
                         }
                     }
-                    break;
+                    break
             }
 
             if (useEvent) {
-                $(document.body).on('keyup change', $(parent), function (e) {
-                    e.stopPropagation();
-                    typeEqualDependency(element, depObject, parent, false);
-                });
+                $(document.body).on('input change', $(parent), function (e) {
+                    typeEqualDependency(element, depObject, parent, false)
+                })
             }
 
-        };
+        }
 
         /**
          * TextBox value not equal with value or with array values
@@ -426,129 +466,140 @@
         var typeNotEqualDependency = function (element, depObject, parent, useEvent) {
 
             if (typeof useEvent == 'undefined') {
-                useEvent = false;
+                useEvent = false
             }
 
-            if( typeof $(parent).prop("tagName")=='undefined' ){
-                return false;
+            if (typeof $(parent).prop('tagName') == 'undefined') {
+                return false
             }
 
-            var tag = $(parent).prop("tagName").toLowerCase();
-            var type = $(parent).prop("type").toLowerCase();
-            var name = tag + ':' + type;
-            var value = $(parent).val();
+            var tag   = $(parent).prop('tagName').toLowerCase()
+            var type  = $(parent).prop('type').toLowerCase()
+            var name  = tag + ':' + type
+            var value = $(parent).val()
 
-            var equalLike = (typeof depObject.like == 'undefined') ? false : true;
-            depObject.strict = (typeof depObject.strict == 'undefined') ? false : depObject.strict;
+            var equalLike    = (typeof depObject.like !== 'undefined')
+            depObject.strict = (typeof depObject.strict == 'undefined') ? false : depObject.strict
 
             // show if empty? default is true
-            depObject.empty = (typeof depObject.empty == 'undefined') ? true : depObject.empty;
+            depObject.empty = (typeof depObject.empty == 'undefined') ? true : depObject.empty
 
             if (equalLike) {
 
-                var eqtag = $(depObject.like).prop("tagName").toLowerCase();
-                var eqtype = $(depObject.like).prop("type").toLowerCase();
-                var eqname = eqtag + ':' + eqtype;
+                var eqtag  = $(depObject.like).prop('tagName').toLowerCase()
+                var eqtype = $(depObject.like).prop('type').toLowerCase()
+                var eqname = eqtag + ':' + eqtype
 
-                if (eqname == 'input:checkbox' || eqname == 'input:radio') {
+                if (eqname === 'input:checkbox' || eqname === 'input:radio') {
                     depObject.value = $(depObject.like + ':checked').map(function () {
-                        return this.value;
-                    }).get();
+                        return this.value
+                    }).get()
                 }
                 else {
 
-                    depObject.value = $(depObject.like).val();
+                    depObject.value = $(depObject.like).val()
 
                     if (!showOnEmptyValue) {
-                        depObject.value = ($.trim($(depObject.like).val()) == '') ? null : $(depObject.like).val();
+                        depObject.value = ($(depObject.like).val().trim() === '') ? null : $(depObject.like).val()
                     }
                 }
             }
 
-
             switch (name) {
-                case "input:text":
-                case "input:password":
-                case "input:number":
-                case "input:date":
-                case "input:email":
-                case "input:url":
-                case "input:tel":
-                case "textarea:textarea":
-                case "select:select-one":
+                case 'input:text':
+                case 'input:password':
+                case 'input:number':
+                case 'input:date':
+                case 'input:email':
+                case 'input:url':
+                case 'input:tel':
+                case 'textarea:textarea':
+                case 'select:select-one':
 
-                    if (value == depObject.value) {
-                        $(element).hide();
+                    if (value === depObject.value) {
+                        // $(element).hide()
+                        hide(element)
                     }
                     else if (stringInArraysHelper(value, depObject.value)) {
-                        $(element).hide();
+                        // $(element).hide()
+                        hide(element)
                     }
                     else {
-                        if ($.trim(value) == '' && !depObject.empty) {
-                            $(element).hide();
-                        } else {
-                            $(element).show();
+                        if (value.trim() === '' && !depObject.empty) {
+                            //$(element).hide()
+                            hide(element)
+                        }
+                        else {
+                            show(element)
+                            //$(element).show()
                         }
                     }
-                    break;
+                    break
 
-                case "input:checkbox":
-                case "input:radio":
+                case 'input:checkbox':
+                case 'input:radio':
 
                     value = $(parent + ':checked').map(function () {
-                        return this.value;
-                    }).get();
-
+                        return this.value
+                    }).get()
 
                     if (typeof depObject.strict == 'undefined') {
-                        depObject.strict = false;
+                        depObject.strict = false
                     }
 
-                    if (value == depObject.value) {
-
-                        $(element).hide();
+                    if (value === depObject.value) {
+                        hide(element)
+                        // $(element).hide()
                     }
                     else if (stringInArraysHelper(value, depObject.value)) {
 
-                        $(element).hide();
+                        hide(element)
+                        // $(element).hide()
                     }
                     else if (arrayInArraysHelper(value, depObject.value, depObject.strict)) {
 
-                        $(element).hide();
+                        hide(element)
+                        // $(element).hide()
                     }
                     else {
                         if (isEmpty(value) && !depObject.empty) {
-                            $(element).hide();
-                        }else{
-                            $(element).show();
+                            // $(element).hide()
+                            hide(element)
+                        }
+                        else {
+                            show(element)
+                            // $(element).show()
                         }
                     }
 
-                    break;
+                    break
 
-                case "select:select-multiple":
+                case 'select:select-multiple':
 
                     if (arrayInArraysHelper(value, depObject.value, depObject.strict)) {
-                        $(element).hide();
-                    } else {
-                        if( value==null && !depObject.empty ) {
-                            $(element).hide();
-                        }else{
-                            $(element).show();
+                        // $(element).hide()
+                        hide(element)
+                    }
+                    else {
+                        if (value == null && !depObject.empty) {
+                            // $(element).hide()
+                            hide(element)
+                        }
+                        else {
+                            show(element)
+                            // $(element).show()
                         }
                     }
 
-                    break;
+                    break
             }
 
             if (useEvent) {
-                $(document.body).on('keyup change', $(parent), function (e) {
-                    e.stopPropagation();
-                    typeNotEqualDependency(element, depObject, parent, false);
-                });
+                $(document.body).on('input change', $(parent), function (e) {
+                    typeNotEqualDependency(element, depObject, parent, false)
+                })
             }
-        };
-
+        }
 
         /**
          * TextBox value compare
@@ -560,84 +611,91 @@
         var typeCompareDependency = function (element, depObject, parent, useEvent) {
 
             if (typeof useEvent == 'undefined') {
-                useEvent = false;
+                useEvent = false
             }
 
-            if( typeof $(parent).prop("tagName")=='undefined' ){
-                return false;
+            if (typeof $(parent).prop('tagName') == 'undefined') {
+                return false
             }
 
-            var tag = $(parent).prop("tagName").toLowerCase();
-            var type = $(parent).prop("type").toLowerCase();
-            var name = tag + ':' + type;
-            var value = parseInt($(parent).val());
-            depObject.value = parseInt(depObject.value);
+            var tag         = $(parent).prop('tagName').toLowerCase()
+            var type        = $(parent).prop('type').toLowerCase()
+            var name        = tag + ':' + type
+            var value       = parseInt($(parent).val())
+            depObject.value = parseInt(depObject.value)
 
             switch (depObject.sign) {
-                case "<":
-                case "lt":
-                case "lessthen":
-                case "less-then":
-                case "LessThen":
+                case '<':
+                case 'lt':
+                case 'lessthen':
+                case 'less-then':
+                case 'LessThen':
                     if (value < depObject.value) {
-                        $(element).show();
+                        show(element)
+                        // hide(element)
+                        // $(element).show()
                     }
                     else {
-                        $(element).hide();
+                        hide(element)
+                        // $(element).hide()
                     }
-                    break;
+                    break
 
-                case "<=":
-                case "lteq":
-                case "lessthenequal":
-                case "less-then-equal":
-                case "LessThenEqual":
-                case "eqlt":
+                case '<=':
+                case 'lteq':
+                case 'lessthenequal':
+                case 'less-then-equal':
+                case 'LessThenEqual':
+                case 'eqlt':
                     if (value <= depObject.value) {
-                        $(element).show();
+                        show(element)
+                        // $(element).show()
                     }
                     else {
-                        $(element).hide();
+                        hide(element)
+                        // $(element).hide()
                     }
-                    break;
+                    break
 
-                case ">=":
-                case "gteq":
-                case "greaterthenequal":
-                case "greater-then-equal":
-                case "GreaterThenEqual":
-                case "eqgt":
+                case '>=':
+                case 'gteq':
+                case 'greaterthenequal':
+                case 'greater-then-equal':
+                case 'GreaterThenEqual':
+                case 'eqgt':
                     if (value >= depObject.value) {
-                        $(element).show();
+                        // $(element).show()
+                        show(element)
                     }
                     else {
-                        $(element).hide();
+                        hide(element)
+                        // $(element).hide()
                     }
-                    break;
+                    break
 
-                case ">":
-                case "gt":
-                case "greaterthen":
-                case "greater-then":
-                case "GreaterThen":
+                case '>':
+                case 'gt':
+                case 'greaterthen':
+                case 'greater-then':
+                case 'GreaterThen':
                     if (value > depObject.value) {
-                        $(element).show();
+                        // $(element).show()
+                        show(element)
                     }
                     else {
-                        $(element).hide();
+                        // $(element).hide()
+                        hide(element)
                     }
-                    break;
-
+                    break
 
             }
 
             if (useEvent) {
-                $(document.body).on('keyup change', $(parent), function (e) {
-                    e.stopPropagation();
-                    typeCompareDependency(element, depObject, parent, false);
-                });
+                $(document.body).on('input change', $(parent), function (e) {
+                    typeCompareDependency(element, depObject, parent, false)
+                })
             }
-        };
+        }
 
         /**
          * TextBox value range
@@ -649,48 +707,46 @@
         var typeRangeDependency = function (element, depObject, parent, useEvent) {
 
             if (typeof useEvent == 'undefined') {
-                useEvent = false;
+                useEvent = false
             }
 
-            if( typeof $(parent).prop("tagName")=='undefined' ){
-                return false;
+            if (typeof $(parent).prop('tagName') == 'undefined') {
+                return false
             }
 
-            var tag = $(parent).prop("tagName").toLowerCase();
-            var type = $(parent).prop("type").toLowerCase();
-            var name = tag + ':' + type;
-            var value = parseInt($(parent).val());
-            var min, max;
-
+            var tag   = $(parent).prop('tagName').toLowerCase()
+            var type  = $(parent).prop('type').toLowerCase()
+            var name  = tag + ':' + type
+            var value = parseInt($(parent).val())
+            var min, max
 
             // value = [50, 100]
 
             if ($.isArray(depObject.value)) {
-                min = parseInt(depObject.value[0]);
-                max = parseInt(depObject.value[1]);
+                min = parseInt(depObject.value[0])
+                max = parseInt(depObject.value[1])
             }
 
             if (typeof depObject.value == 'undefined') {
-                min = parseInt(depObject.min);
-                max = parseInt(depObject.max);
+                min = parseInt(depObject.min)
+                max = parseInt(depObject.max)
             }
 
             if (min < value && value < max) {
-                $(element).show();
+                // $(element).show()
+                show(element)
             }
             else {
-                $(element).hide();
+                // $(element).hide()
+                hide(element)
             }
-
 
             if (useEvent) {
-                $(document.body).on('keyup change', $(parent), function (e) {
-                    e.stopPropagation();
-                    typeRangeDependency(element, depObject, parent, false);
-                });
+                $(document.body).on('input change', $(parent), function (e) {
+                    typeRangeDependency(element, depObject, parent, false)
+                })
             }
-        };
-
+        }
 
         /**
          * TextBox value length
@@ -702,85 +758,92 @@
         var typeLengthDependency = function (element, depObject, parent, useEvent) {
 
             if (typeof useEvent == 'undefined') {
-                useEvent = false;
+                useEvent = false
             }
 
-            if( typeof $(parent).prop("tagName")=='undefined' ){
-                return false;
+            if (typeof $(parent).prop('tagName') == 'undefined') {
+                return false
             }
 
-            var tag = $(parent).prop("tagName").toLowerCase();
-            var type = $(parent).prop("type").toLowerCase();
-            var name = tag + ':' + type;
-            var value = $(parent).val().length;
-            depObject.value = parseInt(depObject.value);
+            var tag         = $(parent).prop('tagName').toLowerCase()
+            var type        = $(parent).prop('type').toLowerCase()
+            var name        = tag + ':' + type
+            var value       = $(parent).val().length
+            depObject.value = parseInt(depObject.value)
 
             switch (depObject.sign) {
-                case "<":
-                case "lt":
-                case "lessthen":
-                case "less-then":
-                case "LessThen":
+                case '<':
+                case 'lt':
+                case 'lessthen':
+                case 'less-then':
+                case 'LessThen':
                     if (value < depObject.value) {
-                        $(element).show();
+                        // $(element).show()
+                        show(element)
                     }
                     else {
-                        $(element).hide();
+                        // $(element).hide()
+                        hide(element)
                     }
-                    break;
+                    break
 
-                case "<=":
-                case "lteq":
-                case "lessthenequal":
-                case "less-then-equal":
-                case "LessThenEqual":
-                case "eqlt":
+                case '<=':
+                case 'lteq':
+                case 'lessthenequal':
+                case 'less-then-equal':
+                case 'LessThenEqual':
+                case 'eqlt':
                     if (value <= depObject.value) {
-                        $(element).show();
+                        // $(element).show()
+                        show(element)
                     }
                     else {
-                        $(element).hide();
+                        // $(element).hide()
+                        hide(element)
                     }
-                    break;
+                    break
 
-                case ">=":
-                case "gteq":
-                case "greaterthenequal":
-                case "greater-then-equal":
-                case "GreaterThenEqual":
-                case "eqgt":
+                case '>=':
+                case 'gteq':
+                case 'greaterthenequal':
+                case 'greater-then-equal':
+                case 'GreaterThenEqual':
+                case 'eqgt':
                     if (value >= depObject.value) {
-                        $(element).show();
+                        // $(element).show()
+                        show(element)
                     }
                     else {
-                        $(element).hide();
+                        // $(element).hide()
+                        hide(element)
                     }
-                    break;
+                    break
 
-                case ">":
-                case "gt":
-                case "greaterthen":
-                case "greater-then":
-                case "GreaterThen":
+                case '>':
+                case 'gt':
+                case 'greaterthen':
+                case 'greater-then':
+                case 'GreaterThen':
                     if (value > depObject.value) {
-                        $(element).show();
+                        // $(element).show()
+                        show(element)
                     }
                     else {
-                        $(element).hide();
+                        // $(element).hide()
+                        hide(element)
                     }
-                    break;
-
+                    break
 
             }
 
             if (useEvent) {
-                $(document.body).on('keyup change', $(parent), function (e) {
-                    e.stopPropagation();
-                    typeLengthDependency(element, depObject, parent, false);
-                });
+                $(document.body).on('input change', $(parent), function (e) {
+                    //e.stopPropagation();
+                    //e.stopImmediatePropagation();
+                    typeLengthDependency(element, depObject, parent, false)
+                })
             }
-        };
-
+        }
 
         /**
          * Using Types
@@ -791,68 +854,75 @@
             $.each($data, function (selector, depObject) {
 
                 switch (depObject.type) {
-                    case "empty":
-                        typeEmptyDependency($el, depObject, selector, true);
-                        break;
+                    case 'empty':
+                        typeEmptyDependency($el, depObject, selector, true)
+                        break
 
-                    case "notempty":
-                    case "not-empty":
-                    case "notEmpty":
-                    case "!empty":
-                        typeNotEmptyDependency($el, depObject, selector, true);
-                        break;
+                    case 'notempty':
+                    case 'not-empty':
+                    case 'notEmpty':
+                    case '!empty':
+                        typeNotEmptyDependency($el, depObject, selector, true)
+                        break
 
-                    case "equal":
-                    case "==":
-                    case "=":
-                        typeEqualDependency($el, depObject, selector, true);
-                        break;
+                    case 'equal':
+                    case '==':
+                    case '=':
+                        typeEqualDependency($el, depObject, selector, true)
+                        break
 
-                    case "!equal":
-                    case "notequal":
-                    case "!=":
-                    case "not-equal":
-                    case "notEqual":
-                        typeNotEqualDependency($el, depObject, selector, true);
-                        break;
+                    case '!equal':
+                    case 'notequal':
+                    case '!=':
+                    case 'not-equal':
+                    case 'notEqual':
+                        typeNotEqualDependency($el, depObject, selector, true)
+                        break
 
-                    case "regexp":
-                    case "expression":
-                    case "reg":
-                    case "exp":
-                        typeRegExpDependency($el, depObject, selector, true);
-                        break;
+                    case 'regexp':
+                    case 'expression':
+                    case 'reg':
+                    case 'exp':
+                        typeRegExpDependency($el, depObject, selector, true)
+                        break
 
-                    case "compare":
-                    case "comp":
-                        typeCompareDependency($el, depObject, selector, true);
-                        break;
+                    case 'compare':
+                    case 'comp':
+                        typeCompareDependency($el, depObject, selector, true)
+                        break
 
-                    case "length":
-                    case "lng":
-                        typeLengthDependency($el, depObject, selector, true);
-                        break;
+                    case 'length':
+                    case 'lng':
+                        typeLengthDependency($el, depObject, selector, true)
+                        break
 
-                    case "range":
-                        typeRangeDependency($el, depObject, selector, true);
-                        break;
+                    case 'range':
+                        typeRangeDependency($el, depObject, selector, true)
+                        break
 
                 }
-            });
+            })
         };
 
         (function ($data) {
             $.each($data, function ($el, depObject) {
-                useTypes($($el), depObject);
-            });
-        })(settings.rules);
+                useTypes($($el), depObject)
+            })
+        })(settings.rules)
 
         return this.each(function () {
-            var $data = JSON.parse($(this).attr(settings.attribute).replace(/'/g, '"'));
-            var that = $(this);
-            $.each($data, function(el, obj){
-                useTypes(that, obj);
-            });
-        });
+            // var $data = $(this).data('depends');
+            var $data = $(this).data(settings.attribute.replace('data-', '').trim())
+
+            if ($data) {
+
+                $(this).addClass('has-dependent-data')
+
+                $.each($data, function (el, obj) {
+                    useTypes($(this), obj)
+                }.bind(this))
+            }
+        })
     }
+
 })(jQuery);
