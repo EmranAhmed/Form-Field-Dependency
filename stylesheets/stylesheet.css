@@ -384,6 +384,22 @@ footer a:hover {
   margin: 10px 5px;
   }
 
+
+
+[data-depends].has-dependent-data {
+    display : none;
+    }
+     [data-depends].has-dependent-data.show {
+    display : inherit;
+    }
+     [data-depends].has-dependent-data:not(.show) {
+    display : none;
+    }
+     [data-depends].has-dependent-data.hide {
+    display : none;
+    }
+
+
 /* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
 @media only screen and (min-width: 480px) and (max-width: 767px) { }
 
