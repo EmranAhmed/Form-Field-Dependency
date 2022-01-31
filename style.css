@@ -3,6 +3,18 @@ body{
     margin: 20px auto;
     }
 
-[data-depends], .dependency-field{
-    display: none;
+[data-depends].has-dependent-data {
+    display : none;
+    }
+
+[data-depends].has-dependent-data.show {
+    display : inherit;
+    }
+
+[data-depends].has-dependent-data:not(.show) {
+    display : none;
+    }
+
+[data-depends].has-dependent-data.hide {
+    display : none;
     }
