@@ -1,924 +1,385 @@
-'use strict';
+'use strict'
 
-(function ($) {
+const dependsOn = (($) => {
 
-    /**
-     * Use on your css file
-     *
-     [data-gwpdepends].has-dependent-data {
-    display : none;
-    }
-     [data-gwpdepends].has-dependent-data.show {
-    display : inherit;
-    }
-     [data-gwpdepends].has-dependent-data:not(.show) {
-    display : none;
-    }
-     [data-gwpdepends].has-dependent-data.hide {
-    display : none;
-    }
-     *
-     * @param options
-     * @constructor
-     */
-    $.fn.FormFieldDependency = function (options) {
+    return class {
 
-        /**
-         * Plugin Settings
-         * @type {void|*}
-         */
-        var settings = $.extend({
-            'attribute' : 'depends', // data-depends="[...]"
-            'rules'     : {}
-        }, options)
+        DEFAULTS = {
+            attribute : 'dependency',
+        }
 
-        /**
-         * Check array exists on array
-         * @param needleArray
-         * @param haystackArray
-         * @param strict
-         * @returns {boolean}
-         */
-        var arrayInArraysHelper = function (needleArray, haystackArray, strict) {
+        constructor(element, options = {}) {
+            this.$element = $(element)
+            this.settings = $.extend(true, {}, this.DEFAULTS, options)
+            this.init();
+            this.action();
+        }
 
-            if (typeof strict == 'undefined') {
-                strict = false
-            }
+        init() {
+            this.$element.addClass('has-dependency-data');
+            let conditionString = $(this.$element).data(this.settings.attribute.replace('data-', '').trim()).replace(/'/g, '"');
+            this.conditions     = JSON.parse(conditionString);
 
-            if (needleArray == null) {
-                needleArray = []
-            }
+            let success = this.check();
+            this.showHide(success);
 
-            if (strict === true) {
-                return (needleArray.sort().join(',').toLowerCase() === haystackArray.sort().join(',').toLowerCase())
+        }
+
+        showHide(success) {
+            if (success) {
+                this.$element.removeClass('dependency-show').addClass('dependency-show')
             }
             else {
-                for (var i = 0; i < needleArray.length; i++) {
-                    if (haystackArray.indexOf(needleArray[i]) >= 0) {
-                        return true
-                    }
-                }
-                return false
+                this.$element.removeClass('dependency-show')
             }
         }
 
-        /**
-         * Check string exist on array value
-         * @param needleString
-         * @param haystackArray
-         * @returns {boolean}
-         */
-        var stringInArraysHelper = function (needleString, haystackArray) {
-            return ($.inArray(needleString, haystackArray) >= 0) && $.isArray(haystackArray)
+        check() {
+            return this.conditions.every((conditionObj) => {
+
+                let selectors = Object.keys(conditionObj);
+
+                return selectors.every((selector) => {
+
+                    let condition = conditionObj[selector];
+
+                    return this.decision(selector, condition)
+                })
+            })
         }
 
-        var show = function (element) {
-            $(element).removeClass('hide').addClass('show')
-        }
+        action() {
+            this.conditions.forEach((rules) => {
 
-        var hide = function (element) {
-            $(element).removeClass('show').addClass('hide')
-        }
+                for (const [selector, rule] of Object.entries(rules)) {
 
-        /**
-         * Check value is empty or not
-         * @param value
-         * @returns {boolean}
-         */
-
-        var isEmpty = function (value) {
-
-            if (typeof value == 'null' || typeof value == 'undefined') {
-                return true
-            }
-
-            if (typeof value == 'string') {
-                return value.trim() == ''
-            }
-
-            if (typeof value == 'object') {
-                if ($.isArray(value)) {
-                    var _tmp = $.map(value, function (val, i) {
-                        return (val.trim() == '') ? null : val
+                    $(document.body).on('input.dependency', selector, (event) => {
+                        let success = this.check();
+                        this.showHide(success);
                     })
-                    return $.isEmptyObject(_tmp)
                 }
-                else {
-                    return $.isEmptyObject(value)
+            })
+        }
+
+        getValue(selector) {
+
+            let values = []
+
+            if (selector) {
+                let inputType = $(selector).prop('type').toLowerCase()
+
+                let currentSelector = selector;
+
+                if ('checkbox' === inputType || 'radio' === inputType) {
+                    currentSelector = `${selector}:checked`
                 }
-            }
-        }
 
-        /**
-         * For Regular Expression Dependency
-         * @param element
-         * @param depObject
-         * @param parent
-         * @param useEvent
-         */
-        var typeRegExpDependency = function (element, depObject, parent, useEvent) {
+                if ('select-multiple' === inputType) {
+                    currentSelector = `${selector} option:selected`
+                }
 
-            if (typeof useEvent == 'undefined') {
-                useEvent = false
-            }
-
-            if (typeof $(parent).prop('tagName') == 'undefined') {
-                return false
-            }
-
-            var tag   = $(parent).prop('tagName').toLowerCase()
-            var type  = $(parent).prop('type').toLowerCase()
-            var name  = tag + ':' + type
-            var value = $(parent).val().trim()
-
-            switch (name) {
-                case 'input:text':
-                case 'input:password':
-                case 'input:number':
-                case 'input:date':
-                case 'input:email':
-                case 'input:url':
-                case 'input:tel':
-                case 'textarea:textarea':
-
-                    var modifier = (typeof depObject.modifier == 'undefined') ? '' : depObject.modifier
-                    var pattern  = new RegExp(depObject.pattern, modifier)
-
-                    if (pattern.test(value)) {
-                        show(element)
-                        // $(element).addClass('show')
-                    }
-                    else {
-                        hide(element)
-                        //$(element).removeClass('show')
-                    }
-                    break
-            }
-
-            if (useEvent) {
-                $(document.body).on('input', $(parent), function (e) {
-                    typeRegExpDependency(element, depObject, parent, false)
+                $(currentSelector).each((index, element) => {
+                    let value = $(element).val();
+                    values.push(value)
                 })
             }
+
+            return values.filter(value => value !== '');
         }
 
-        /**
-         * For Empty TextBox
-         * @param element
-         * @param depObject
-         * @param parent
-         * @param useEvent
-         */
-        var typeEmptyDependency = function (element, depObject, parent, useEvent) {
+        decision(selector, condition) {
 
-            if (typeof useEvent == 'undefined') {
-                useEvent = false
+            let type         = condition['type'];
+            let currentValue = this.getValue(selector)
+
+            let checkValue = (typeof condition['value'] === 'undefined') ? false : condition['value'];
+
+            let minValue = (typeof condition['min'] === 'undefined') ? false : parseInt(condition['min']);
+            let maxValue = (typeof condition['max'] === 'undefined') ? false : parseInt(condition['max']);
+
+            let allowEmpty = (typeof condition['empty'] === 'undefined') ? false : condition['empty'];
+            let isEmpty    = (!allowEmpty && currentValue.length < 1)
+
+            let likeSelector      = (typeof condition['like'] === 'undefined') ? false : condition['like'];
+            let likeSelectorValue = this.getValue(likeSelector)
+
+            let regExpPattern  = (typeof condition['pattern'] === 'undefined') ? false : condition['pattern'];
+            let regExpModifier = (typeof condition['modifier'] === 'undefined') ? 'gi' : condition['modifier'];
+            let sign           = (typeof condition['sign'] === 'undefined') ? false : condition['sign'];
+            let strict         = (typeof condition['strict'] === 'undefined') ? false : condition['strict'];
+
+            // if empty return true
+            if ('empty' === type) {
+                return (currentValue.length < 1);
             }
 
-            if (typeof $(parent).prop('tagName') == 'undefined') {
-                return false
+            // if not empty return true
+            if ('!empty' === type || 'notEmpty' === type) {
+
+                return (currentValue.length > 0)
             }
 
-            var tag   = $(parent).prop('tagName').toLowerCase()
-            var type  = $(parent).prop('type').toLowerCase()
-            var name  = tag + ':' + type
-            var value = $(parent).val()
+            // if equal return true
+            if (('equal' === type || '==' === type)) {
 
-            switch (name) {
-                case 'input:text':
-                case 'input:password':
-                case 'input:number':
-                case 'input:date':
-                case 'input:email':
-                case 'input:url':
-                case 'input:tel':
-                case 'textarea:textarea':
-                case 'select:select-one':
+                if (isEmpty) {
+                    return false
+                }
 
-                    if (value.trim() === '') {
-                        // $(element).show()
-                        show(element)
+                // Match two selector value/s
+                if (likeSelector) {
+
+                    if (strict) {
+                        return likeSelectorValue.every((value) => {
+                            return currentValue.includes(value)
+                        })
                     }
                     else {
-                        // $(element).hide()
-                        hide(element)
+                        return likeSelectorValue.some((value) => {
+                            return currentValue.includes(value)
+                        })
                     }
-                    break
+                }
 
-                case 'input:checkbox':
-                    if ($(parent).is(':checked') && value.trim() !== '') {
-                        // $(element).hide()
-                        hide(element)
-                    }
-                    else {
-                        // $(element).show()
-                        show(element)
-                    }
-                    break
+                // Match pre-defined value/s
+                if (strict) {
 
-                case 'select:select-multiple':
-
-                    if (isEmpty(value)) {
-                        // $(element).show()
-                        show(element)
-                    }
-                    else {
-                        hide(element)
-                        // $(element).hide()
+                    if (checkValue && $.isArray(checkValue)) {
+                        return checkValue.every((value) => {
+                            return currentValue.includes(value);
+                        })
                     }
 
-                    break
-            }
-
-            if (useEvent) {
-                $(document.body).on('input change', $(parent), function (e) {
-                    typeEmptyDependency(element, depObject, parent, false)
-                })
-            }
-        }
-
-        /**
-         * For non empty TextBox
-         * @param element
-         * @param depObject
-         * @param parent
-         * @param useEvent
-         */
-        var typeNotEmptyDependency = function (element, depObject, parent, useEvent) {
-
-            if (typeof useEvent == 'undefined') {
-                useEvent = false
-            }
-
-            if (typeof $(parent).prop('tagName') == 'undefined') {
-                return false
-            }
-
-            var tag   = $(parent).prop('tagName').toLowerCase()
-            var type  = $(parent).prop('type').toLowerCase()
-            var name  = tag + ':' + type
-            var value = $(parent).val()
-
-            switch (name) {
-                case 'input:text':
-                case 'input:password':
-                case 'input:number':
-                case 'input:date':
-                case 'input:email':
-                case 'input:url':
-                case 'input:tel':
-                case 'textarea:textarea':
-                case 'select:select-one':
-
-                    if (value.trim() !== '') {
-                        show(element)
-                        //$(element).show()
-                    }
-                    else {
-                        hide(element)
-                        //$(element).hide()
-                    }
-                    break
-
-                case 'input:checkbox':
-                    if ($(parent).is(':checked') && value.trim() !== '') {
-                        // $(element).show()
-                        show(element)
-                    }
-                    else {
-                        hide(element)
-                        // $(element).hide()
-                    }
-                    break
-
-                case 'select:select-multiple':
-
-                    if (isEmpty(value)) {
-                        hide(element)
-                        // $(element).hide()
-                    }
-                    else {
-                        show(element)
-                        //$(element).show()
+                    if (checkValue && !$.isArray(checkValue)) {
+                        return currentValue.includes(checkValue);
                     }
 
-                    break
-            }
-
-            if (useEvent) {
-                $(document.body).on('input change', $(parent), function (e) {
-                    typeNotEmptyDependency(element, depObject, parent, false)
-                })
-            }
-        }
-
-        /**
-         * TextBox value matched with value or with array values
-         * @param element
-         * @param depObject
-         * @param parent
-         * @param useEvent
-         */
-        var typeEqualDependency = function (element, depObject, parent, useEvent) {
-
-            if (typeof useEvent == 'undefined') {
-                useEvent = false
-            }
-
-            if (typeof $(parent).prop('tagName') == 'undefined') {
-                return false
-            }
-
-            var tag   = $(parent).prop('tagName').toLowerCase()
-            var type  = $(parent).prop('type').toLowerCase()
-            var name  = tag + ':' + type
-            var value = $(parent).val()
-
-            var equalLike = (typeof depObject.like !== 'undefined');
-
-            // show if empty?. default false
-            depObject.empty = (typeof depObject.empty == 'undefined') ? false : depObject.empty
-
-            depObject.strict = (typeof depObject.strict == 'undefined') ? false : depObject.strict
-
-            if (equalLike) {
-
-                var eqtag  = $(depObject.like).prop('tagName').toLowerCase()
-                var eqtype = $(depObject.like).prop('type').toLowerCase()
-                var eqname = eqtag + ':' + eqtype
-
-                if (eqname === 'input:checkbox' || eqname === 'input:radio') {
-                    depObject.value = $(depObject.like + ':checked').map(function () {
-                        return this.value
-                    }).get()
                 }
                 else {
 
-                    depObject.value = $(depObject.like).val()
+                    if (checkValue && $.isArray(checkValue)) {
+                        return checkValue.some((value) => {
+                            return currentValue.includes(value);
+                        })
+                    }
 
-                    if (!showOnEmptyValue) {
-                        depObject.value = ($(depObject.like).val().trim() === '') ? null : $(depObject.like).val()
+                    if (checkValue && !$.isArray(checkValue)) {
+                        return currentValue.includes(checkValue);
                     }
                 }
             }
 
-            switch (name) {
-                case 'input:text':
-                case 'input:password':
-                case 'input:number':
-                case 'input:date':
-                case 'input:email':
-                case 'input:url':
-                case 'input:tel':
-                case 'textarea:textarea':
-                case 'select:select-one':
+            // if not equal return true
+            if (('!equal' === type || '!=' === type || 'notEqual' === type)) {
 
-                    if (value.trim() === depObject.value) {
-                        //$(element).show()
-                        show(element)
-                    }
-                    else if (stringInArraysHelper(value, depObject.value)) {
-                        //$(element).show()
-                        show(element)
+                if (isEmpty) {
+                    return false
+                }
+
+                // Match two selector value/s
+                if (likeSelector) {
+
+                    if (strict) {
+                        return likeSelectorValue.every((value) => {
+                            return !currentValue.includes(value)
+                        })
                     }
                     else {
-                        if (value.trim() === '' && depObject.empty) {
-                            // $(element).show()
-                            show(element)
-                        }
-                        else {
-                            // $(element).hide()
-                            hide(element)
-                        }
+                        return likeSelectorValue.some((value) => {
+                            return !currentValue.includes(value)
+                        })
                     }
-                    break
+                }
 
-                case 'input:checkbox':
-                case 'input:radio':
+                // Match pre-defined value/s
+                if (strict) {
 
-                    var value = $(parent + ':checked').map(function () {
-                        return this.value
-                    }).get()
-
-                    if (value === depObject.value) {
-                        // $(element).show()
-                        show(element)
+                    if (checkValue && $.isArray(checkValue)) {
+                        return checkValue.every((value) => {
+                            return !currentValue.includes(value);
+                        })
                     }
-                    else if (stringInArraysHelper(value, depObject.value)) {
-                        // $(element).show()
-                        show(element)
+
+                    if (checkValue && !$.isArray(checkValue)) {
+                        return !currentValue.includes(checkValue);
                     }
-                    else if (arrayInArraysHelper(value, depObject.value, depObject.strict)) {
-                        // $(element).show()
-                        show(element)
-                    }
-                    else {
-                        if (isEmpty(value) && depObject.empty) {
-                            // $(element).show()
-                            show(element)
-                        }
-                        else {
-                            // $(element).hide()
-                            hide(element)
-                        }
-                    }
-                    break
 
-                case 'select:select-multiple':
-
-                    if (arrayInArraysHelper(value, depObject.value, depObject.strict)) {
-                        //$(element).show()
-                        show(element)
-                    }
-                    else {
-
-                        if (value == null && depObject.empty) {
-                            //$(element).show()
-                            show(element)
-                        }
-                        else {
-                            hide(element)
-                            //$(element).hide()
-                        }
-                    }
-                    break
-            }
-
-            if (useEvent) {
-                $(document.body).on('input change', $(parent), function (e) {
-                    typeEqualDependency(element, depObject, parent, false)
-                })
-            }
-
-        }
-
-        /**
-         * TextBox value not equal with value or with array values
-         * @param element
-         * @param depObject
-         * @param parent
-         * @param useEvent
-         */
-        var typeNotEqualDependency = function (element, depObject, parent, useEvent) {
-
-            if (typeof useEvent == 'undefined') {
-                useEvent = false
-            }
-
-            if (typeof $(parent).prop('tagName') == 'undefined') {
-                return false
-            }
-
-            var tag   = $(parent).prop('tagName').toLowerCase()
-            var type  = $(parent).prop('type').toLowerCase()
-            var name  = tag + ':' + type
-            var value = $(parent).val()
-
-            var equalLike    = (typeof depObject.like !== 'undefined')
-            depObject.strict = (typeof depObject.strict == 'undefined') ? false : depObject.strict
-
-            // show if empty? default is true
-            depObject.empty = (typeof depObject.empty == 'undefined') ? true : depObject.empty
-
-            if (equalLike) {
-
-                var eqtag  = $(depObject.like).prop('tagName').toLowerCase()
-                var eqtype = $(depObject.like).prop('type').toLowerCase()
-                var eqname = eqtag + ':' + eqtype
-
-                if (eqname === 'input:checkbox' || eqname === 'input:radio') {
-                    depObject.value = $(depObject.like + ':checked').map(function () {
-                        return this.value
-                    }).get()
                 }
                 else {
 
-                    depObject.value = $(depObject.like).val()
+                    if (checkValue && $.isArray(checkValue)) {
+                        return checkValue.some((value) => {
+                            return !currentValue.includes(value);
+                        })
+                    }
 
-                    if (!showOnEmptyValue) {
-                        depObject.value = ($(depObject.like).val().trim() === '') ? null : $(depObject.like).val()
+                    if (checkValue && !$.isArray(checkValue)) {
+                        return !currentValue.includes(checkValue);
                     }
                 }
             }
 
-            switch (name) {
-                case 'input:text':
-                case 'input:password':
-                case 'input:number':
-                case 'input:date':
-                case 'input:email':
-                case 'input:url':
-                case 'input:tel':
-                case 'textarea:textarea':
-                case 'select:select-one':
+            // if regexp match
+            if (('regexp' === type || 'exp' === type || 'expression' === type) && regExpPattern) {
 
-                    if (value === depObject.value) {
-                        // $(element).hide()
-                        hide(element)
-                    }
-                    else if (stringInArraysHelper(value, depObject.value)) {
-                        // $(element).hide()
-                        hide(element)
-                    }
-                    else {
-                        if (value.trim() === '' && !depObject.empty) {
-                            //$(element).hide()
-                            hide(element)
-                        }
-                        else {
-                            show(element)
-                            //$(element).show()
-                        }
-                    }
-                    break
+                if (isEmpty) {
+                    return false
+                }
 
-                case 'input:checkbox':
-                case 'input:radio':
-
-                    value = $(parent + ':checked').map(function () {
-                        return this.value
-                    }).get()
-
-                    if (typeof depObject.strict == 'undefined') {
-                        depObject.strict = false
-                    }
-
-                    if (value === depObject.value) {
-                        hide(element)
-                        // $(element).hide()
-                    }
-                    else if (stringInArraysHelper(value, depObject.value)) {
-
-                        hide(element)
-                        // $(element).hide()
-                    }
-                    else if (arrayInArraysHelper(value, depObject.value, depObject.strict)) {
-
-                        hide(element)
-                        // $(element).hide()
-                    }
-                    else {
-                        if (isEmpty(value) && !depObject.empty) {
-                            // $(element).hide()
-                            hide(element)
-                        }
-                        else {
-                            show(element)
-                            // $(element).show()
-                        }
-                    }
-
-                    break
-
-                case 'select:select-multiple':
-
-                    if (arrayInArraysHelper(value, depObject.value, depObject.strict)) {
-                        // $(element).hide()
-                        hide(element)
-                    }
-                    else {
-                        if (value == null && !depObject.empty) {
-                            // $(element).hide()
-                            hide(element)
-                        }
-                        else {
-                            show(element)
-                            // $(element).show()
-                        }
-                    }
-
-                    break
-            }
-
-            if (useEvent) {
-                $(document.body).on('input change', $(parent), function (e) {
-                    typeNotEqualDependency(element, depObject, parent, false)
+                let exp = new RegExp(regExpPattern, regExpModifier)
+                return currentValue.every((value) => {
+                    return exp.test(value)
                 })
             }
-        }
 
-        /**
-         * TextBox value compare
-         * @param element
-         * @param depObject
-         * @param parent
-         * @param useEvent
-         */
-        var typeCompareDependency = function (element, depObject, parent, useEvent) {
+            // if length
+            if ('length' === type) {
 
-            if (typeof useEvent == 'undefined') {
-                useEvent = false
-            }
+                if (isEmpty) {
+                    return false
+                }
 
-            if (typeof $(parent).prop('tagName') == 'undefined') {
-                return false
-            }
+                if (checkValue && $.isArray(checkValue)) {
+                    minValue = parseInt(checkValue[0]);
+                    maxValue = (typeof checkValue[1] === 'undefined') ? false : parseInt(checkValue[1]);
+                }
 
-            var tag         = $(parent).prop('tagName').toLowerCase()
-            var type        = $(parent).prop('type').toLowerCase()
-            var name        = tag + ':' + type
-            var value       = parseInt($(parent).val())
-            depObject.value = parseInt(depObject.value)
+                if (checkValue && !$.isArray(checkValue)) {
+                    minValue = parseInt(checkValue);
+                    maxValue = false;
+                }
 
-            switch (depObject.sign) {
-                case '<':
-                case 'lt':
-                case 'lessthen':
-                case 'less-then':
-                case 'LessThen':
-                    if (value < depObject.value) {
-                        show(element)
-                        // hide(element)
-                        // $(element).show()
+                return currentValue.every((value) => {
+                    if (!maxValue) {
+                        return value.length >= minValue;
                     }
-                    else {
-                        hide(element)
-                        // $(element).hide()
-                    }
-                    break
 
-                case '<=':
-                case 'lteq':
-                case 'lessthenequal':
-                case 'less-then-equal':
-                case 'LessThenEqual':
-                case 'eqlt':
-                    if (value <= depObject.value) {
-                        show(element)
-                        // $(element).show()
+                    if (!minValue) {
+                        return value.length <= maxValue;
                     }
-                    else {
-                        hide(element)
-                        // $(element).hide()
-                    }
-                    break
 
-                case '>=':
-                case 'gteq':
-                case 'greaterthenequal':
-                case 'greater-then-equal':
-                case 'GreaterThenEqual':
-                case 'eqgt':
-                    if (value >= depObject.value) {
-                        // $(element).show()
-                        show(element)
-                    }
-                    else {
-                        hide(element)
-                        // $(element).hide()
-                    }
-                    break
+                    return value.length >= minValue && value.length <= maxValue;
 
-                case '>':
-                case 'gt':
-                case 'greaterthen':
-                case 'greater-then':
-                case 'GreaterThen':
-                    if (value > depObject.value) {
-                        // $(element).show()
-                        show(element)
-                    }
-                    else {
-                        // $(element).hide()
-                        hide(element)
-                    }
-                    break
-
-            }
-
-            if (useEvent) {
-                $(document.body).on('input change', $(parent), function (e) {
-                    typeCompareDependency(element, depObject, parent, false)
                 })
             }
-        }
 
-        /**
-         * TextBox value range
-         * @param element
-         * @param depObject
-         * @param parent
-         * @param useEvent
-         */
-        var typeRangeDependency = function (element, depObject, parent, useEvent) {
+            // if range
+            if ('range' === type) {
 
-            if (typeof useEvent == 'undefined') {
-                useEvent = false
-            }
+                if (isEmpty) {
+                    return false
+                }
 
-            if (typeof $(parent).prop('tagName') == 'undefined') {
-                return false
-            }
+                if (checkValue && $.isArray(checkValue)) {
+                    minValue = parseInt(checkValue[0]);
+                    maxValue = (typeof checkValue[1] === 'undefined') ? false : parseInt(checkValue[1]);
+                }
 
-            var tag   = $(parent).prop('tagName').toLowerCase()
-            var type  = $(parent).prop('type').toLowerCase()
-            var name  = tag + ':' + type
-            var value = parseInt($(parent).val())
-            var min, max
+                return currentValue.every((value) => {
+                    if (!maxValue) {
+                        return parseInt(value) > minValue;
+                    }
 
-            // value = [50, 100]
+                    if (!minValue) {
+                        return parseInt(value) < maxValue;
+                    }
 
-            if ($.isArray(depObject.value)) {
-                min = parseInt(depObject.value[0])
-                max = parseInt(depObject.value[1])
-            }
+                    return parseInt(value) > minValue && parseInt(value) < maxValue;
 
-            if (typeof depObject.value == 'undefined') {
-                min = parseInt(depObject.min)
-                max = parseInt(depObject.max)
-            }
-
-            if (min < value && value < max) {
-                // $(element).show()
-                show(element)
-            }
-            else {
-                // $(element).hide()
-                hide(element)
-            }
-
-            if (useEvent) {
-                $(document.body).on('input change', $(parent), function (e) {
-                    typeRangeDependency(element, depObject, parent, false)
                 })
             }
-        }
 
-        /**
-         * TextBox value length
-         * @param element
-         * @param depObject
-         * @param parent
-         * @param useEvent
-         */
-        var typeLengthDependency = function (element, depObject, parent, useEvent) {
+            // if compare
+            if ('compare' === type && sign && checkValue) {
 
-            if (typeof useEvent == 'undefined') {
-                useEvent = false
-            }
+                if (isEmpty) {
+                    return false
+                }
 
-            if (typeof $(parent).prop('tagName') == 'undefined') {
-                return false
-            }
+                checkValue = parseInt(checkValue)
 
-            var tag         = $(parent).prop('tagName').toLowerCase()
-            var type        = $(parent).prop('type').toLowerCase()
-            var name        = tag + ':' + type
-            var value       = $(parent).val().length
-            depObject.value = parseInt(depObject.value)
+                switch (sign) {
+                    case '<':
+                        return currentValue.every((value) => {
+                            return parseInt(value) < checkValue;
+                        })
+                        break;
 
-            switch (depObject.sign) {
-                case '<':
-                case 'lt':
-                case 'lessthen':
-                case 'less-then':
-                case 'LessThen':
-                    if (value < depObject.value) {
-                        // $(element).show()
-                        show(element)
-                    }
-                    else {
-                        // $(element).hide()
-                        hide(element)
-                    }
-                    break
+                    case '<=':
+                        return currentValue.every((value) => {
+                            return parseInt(value) <= checkValue;
+                        })
+                        break;
 
-                case '<=':
-                case 'lteq':
-                case 'lessthenequal':
-                case 'less-then-equal':
-                case 'LessThenEqual':
-                case 'eqlt':
-                    if (value <= depObject.value) {
-                        // $(element).show()
-                        show(element)
-                    }
-                    else {
-                        // $(element).hide()
-                        hide(element)
-                    }
-                    break
+                    case '>':
+                        return currentValue.every((value) => {
+                            return parseInt(value) > checkValue;
+                        })
+                        break;
 
-                case '>=':
-                case 'gteq':
-                case 'greaterthenequal':
-                case 'greater-then-equal':
-                case 'GreaterThenEqual':
-                case 'eqgt':
-                    if (value >= depObject.value) {
-                        // $(element).show()
-                        show(element)
-                    }
-                    else {
-                        // $(element).hide()
-                        hide(element)
-                    }
-                    break
+                    case '>=':
+                        return currentValue.every((value) => {
+                            return parseInt(value) >= checkValue;
+                        })
+                        break;
 
-                case '>':
-                case 'gt':
-                case 'greaterthen':
-                case 'greater-then':
-                case 'GreaterThen':
-                    if (value > depObject.value) {
-                        // $(element).show()
-                        show(element)
-                    }
-                    else {
-                        // $(element).hide()
-                        hide(element)
-                    }
-                    break
-
-            }
-
-            if (useEvent) {
-                $(document.body).on('input change', $(parent), function (e) {
-                    //e.stopPropagation();
-                    //e.stopImmediatePropagation();
-                    typeLengthDependency(element, depObject, parent, false)
-                })
-            }
-        }
-
-        /**
-         * Using Types
-         * @param $el
-         * @param $data
-         */
-        var useTypes = function ($el, $data) {
-            $.each($data, function (selector, depObject) {
-
-                switch (depObject.type) {
-                    case 'empty':
-                        typeEmptyDependency($el, depObject, selector, true)
-                        break
-
-                    case 'notempty':
-                    case 'not-empty':
-                    case 'notEmpty':
-                    case '!empty':
-                        typeNotEmptyDependency($el, depObject, selector, true)
-                        break
-
-                    case 'equal':
-                    case '==':
                     case '=':
-                        typeEqualDependency($el, depObject, selector, true)
-                        break
-
-                    case '!equal':
-                    case 'notequal':
-                    case '!=':
-                    case 'not-equal':
-                    case 'notEqual':
-                        typeNotEqualDependency($el, depObject, selector, true)
-                        break
-
-                    case 'regexp':
-                    case 'expression':
-                    case 'reg':
-                    case 'exp':
-                        typeRegExpDependency($el, depObject, selector, true)
-                        break
-
-                    case 'compare':
-                    case 'comp':
-                        typeCompareDependency($el, depObject, selector, true)
-                        break
-
-                    case 'length':
-                    case 'lng':
-                        typeLengthDependency($el, depObject, selector, true)
-                        break
-
-                    case 'range':
-                        typeRangeDependency($el, depObject, selector, true)
-                        break
-
+                    case '==':
+                        return currentValue.every((value) => {
+                            return parseInt(value) === checkValue;
+                        })
+                        break;
                 }
-            })
-        };
 
-        (function ($data) {
-            $.each($data, function ($el, depObject) {
-                useTypes($($el), depObject)
-            })
-        })(settings.rules)
-
-        return this.each(function () {
-            // var $data = $(this).data('depends');
-            var $data = $(this).data(settings.attribute.replace('data-', '').trim())
-
-            if ($data) {
-
-                $(this).addClass('has-dependent-data')
-
-                $.each($data, function (el, obj) {
-                    useTypes($(this), obj)
-                }.bind(this))
             }
-        })
+
+            // $( document.body ).triggerHandler( 'depends-on',[selector, condition, this])
+
+        }
     }
 
-})(jQuery);
+})(jQuery)
+
+const jQueryPlugin = (($) => {
+
+    return (PluginName, ClassName) => {
+
+        $.fn[PluginName] = function (options, ...args) {
+            // return this.each((index, element) => {
+
+            let $element = $(this)
+            let data     = $element.data(PluginName)
+
+            if (!data) {
+                data = new ClassName($element, $.extend({}, options))
+                $element.data(PluginName, data)
+            }
+
+            if (typeof options === 'string') {
+
+                if (typeof data[options] === 'object') {
+                    return data[options]
+                }
+
+                if (typeof data[options] === 'function') {
+                    return data[options](...args)
+                }
+            }
+
+            return this
+            // })
+        }
+
+        // Constructor
+        $.fn[PluginName].Constructor = ClassName
+
+        // Short hand
+        $[PluginName] = (options, ...args) => $({})[PluginName](options, ...args)
+
+        // No Conflict
+        $.fn[PluginName].noConflict = () => $.fn[PluginName]
+    }
+
+})(jQuery)
+
+jQueryPlugin('dependsOn', dependsOn)
