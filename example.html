@@ -6,9 +6,10 @@
     <title>Simple Form Field Dependency</title>
     <link rel="stylesheet" href="bootstrap.min.css"/>
     <link rel="stylesheet" href="style.css"/>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="form-field-dependency.js"></script>
+    <script src="jquery-3.6.0.js"></script>
+    <script src="dependency.js"></script>
     <script src="script.js"></script>
+
 </head>
 <body>
 
@@ -18,36 +19,53 @@
             <form>
                 <div class="form-group">
                     <label for="InputEmail">Email address:</label>
-                    <input type="text" class="form-control" id="InputEmail" placeholder="Email">
+                    <input type="text" class="form-control" value="" id="InputEmail" placeholder="Email">
                 </div>
 
-                <div class="form-group dependency-field" id="only-email">
-                    <label for="InputValidRegExpString">Will Show On Email address is valid.</label>
+                <div class="form-group">
+                    <label for="InputEmail">Email address 2:</label>
+                    <input type="text" class="form-control" value="" id="InputEmail2" placeholder="Email">
+                </div>
+
+                <div class="form-group" data-dependency="[{'#InputEmail':{'type':'!empty'}, '#InputEmail2':{'type':'!empty'}}]" id="only-email">
+                    <label for="InputValidRegExpString">Email one two not empty.</label>
                     <input type="text" class="form-control" id="InputValidRegExpString" placeholder="Wow email is valid">
                 </div>
-<!--
-                <div class="form-group dependency-field" id="only-equal" data-depends="[{'#InputEmail':{'type':'equal', 'value':'lorem'}}]">
-                    <label for="InputNonArrayString">Will Show On Email field filledUp with 'lorem'. Non Array</label>
+
+                <div class="form-group" id="only-equal" data-dependency="[{'#InputEmail':{'type':'equal', 'value':'lorem'}}]">
+                    <label for="InputNonArrayString">Will Show On Email field filledUp with 'lorem'. Non Array. like selector</label>
                     <input type="text" class="form-control" id="InputNonArrayString" placeholder="">
                 </div>
 
-                <div class="form-group" data-depends="[{'#InputEmail':{'type':'equal', 'value':['lorem','ipsum']}}]">
+
+                <div class="form-group" data-dependency="[{'#InputEmail':{'type':'regexp', 'pattern':'[a-z]+@[a-z]+.[a-z]+', 'modifier':'gi'}}]">
+                    <label for="InputValidRegExpString">Will Show If Email address is valid.</label>
+                    <input type="text" class="form-control" placeholder="Wow this email is valid">
+                </div>
+
+
+                <div class="form-group dependency-field" data-dependency="[{'#InputEmail':{'type':'equal', 'value':'lorem'}}]">
+                    <label for="InputNonArrayString">Will Show On Email field filledUp with 'lorem'. Non Array</label>
+                    <input type="text" class="form-control" placeholder="">
+                </div>
+
+                <div class="form-group" data-dependency="[{'#InputEmail':{'type':'equal', 'value':['lorem','ipsum']}}]">
                     <label for="InputArrayString">Will Show On Email field filledUp with 'lorem' or 'ipsum'. With Array</label>
                     <input type="text" class="form-control" id="InputArrayString" placeholder="">
                 </div>
 
-                <div class="form-group" data-depends="[{'#InputEmail':{'type':'notempty'}}]">
+                <div class="form-group" data-dependency="[{'#InputEmail':{'type':'notempty'}}]">
                     <label for="InputNotEmpty">Will Show On Email field Not Empty</label>
                     <input type="text" class="form-control" id="InputNotEmpty" placeholder="">
                 </div>
 
-                <div class="form-group" data-depends="[{'#InputEmail':{'type':'empty'}}]">
+                <div class="form-group" data-dependency="[{'#InputEmail':{'type':'empty'}}]">
                     <label for="InputEmpty">Will Hide On Email field filled Up</label>
                     <input type="text" class="form-control" id="InputEmpty" placeholder="">
-                </div>-->
+                </div>
 
 
-           <!--     <div class="form-group">
+                <div class="form-group">
                     <label for="InputEmailEq1">Equal 1:</label>
                     <input type="text" class="form-control" id="InputEmailEq1" placeholder="Email">
                 </div>
@@ -55,28 +73,28 @@
                 <div class="form-group">
                     <label for="InputEmailEq2">Equal 2:</label>
                     <input type="text" class="form-control" id="InputEmailEq2" placeholder="Another Email">
-                </div>-->
+                </div>
 
-                <!--<div class="form-group" data-depends="[{'#InputEmailEq1':{'type':'equal', 'like':'#InputEmailEq2', 'empty':false}}]">
+                <div class="form-group" data-dependency="[{'#InputEmailEq1':{'type':'equal', 'like':'#InputEmailEq2', 'empty':false}}]">
                     <label for="InputEmailEqsame">Will show when Equal1 value same as Equal2 value :</label>
                     <input type="text" class="form-control" id="InputEmailEqsame" placeholder="Another Email">
-                </div>-->
+                </div>
 
 
-                <!--<div class="form-group">
+                <div class="form-group">
                     <label for="InputAddress">Address:</label>
                     <textarea class="form-control" id="InputAddress" placeholder="Address"></textarea>
-                </div>-->
+                </div>
 
-                <!--<div class="form-group" data-depends="[{'#InputAddress':{'type':'length', 'sign':'>=', 'value':'5'}}]">
+                <div class="form-group" data-dependency="[{'#InputAddress':{'type':'length', 'value':'5'}}]">
                     <label for="InputTextAreaLength">Will Show on TextArea Text Length >= 5</label>
                     <input type="text" class="form-control" id="InputTextAreaLength" placeholder="">
                 </div>
 
-                <div class="form-group" data-depends="[{'#InputAddress':{'type':'empty'}}]">
+                <div class="form-group" data-dependency="[{'#InputAddress':{'type':'empty'}}]">
                     <label for="InputTextAreaEmpty">Will Show on TextArea Empty</label>
                     <input type="text" class="form-control" id="InputTextAreaEmpty" placeholder="">
-                </div>-->
+                </div>
 
                 <div class="form-group">
                     <label for="InputSelectOne">Select One:</label>
@@ -88,20 +106,20 @@
                     </select>
                 </div>
 
-                <!--<div class="form-group" data-depends="[{'#InputSelectOne':{'type':'empty'}}]">
+                <div class="form-group" data-dependency="[{'#InputSelectOne':{'type':'empty'}}]">
                     <label for="InputSelectOneEmpty">Will Show on Select One Empty</label>
                     <input type="text" class="form-control" id="InputSelectOneEmpty" placeholder="">
-                </div>-->
+                </div>
 
-                <!-- <div class="form-group" data-depends="[{'#InputSelectOne':{'type':'!empty'}}]">
+                <div class="form-group" data-dependency="[{'#InputSelectOne':{'type':'!empty'}}]">
                     <label for="InputSelectOneNotEmpty">Will Show on Select One NOT Empty</label>
                     <input type="text" class="form-control" id="InputSelectOneNotEmpty" placeholder="">
-                </div> -->
+                </div>
 
-                <!--<div class="form-group" data-depends="[{'#InputSelectOne':{'type':'equal','value':['three','2']}}]">
-                    <label for="InputSelectOneEqual">Will Show on Select One  Equal Three | 2 selected</label>
+                <div class="form-group" data-dependency="[{'#InputSelectOne':{'type':'equal','value':['three','2']}}]">
+                    <label for="InputSelectOneEqual">Will Show on Select One Equal Three | 2 selected</label>
                     <input type="text" class="form-control" id="InputSelectOneEqual" placeholder="">
-                </div>-->
+                </div>
 
                 <div class="form-group">
                     <label for="InputSelectMulti">Select Multi:</label>
@@ -111,7 +129,6 @@
                         <option value="option3">Three</option>
                     </select>
                 </div>
-
 
 
                 <div class="form-group system1">
@@ -139,12 +156,10 @@
                 </div>
 
 
-
-              <!--  <div class="form-group" data-depends="[{'input.style-checkboxes':{'type':'!equal', 'like':'input.system-checkboxes'}}]">
-                    <label for="InputSystemStyleEqual">Will Show when System Not Equals Style</label>
+                <div class="form-group" data-dependency="[{'input.style-checkboxes':{'type':'equal', 'like':'input.system-checkboxes'}}]">
+                    <label for="InputSystemStyleEqual">Will Show when System Equals Style</label>
                     <input type="text" class="form-control" id="InputSystemStyleEqual" placeholder="">
-                </div> -->
-
+                </div>
 
 
                 <div class="form-group checkboxes">
@@ -160,46 +175,46 @@
                 </div>
 
 
-                <!--<div class="form-group" data-depends="[{'input.checkboxes':{'type':'empty'}}]">
+                <div class="form-group" data-dependency="[{'input.checkboxes':{'type':'empty'}}]">
                     <label for="InputCheckBoxEmpty">Will Show on Checkbox (1 | 2 | 3) NOT checked</label>
                     <input type="text" class="form-control" id="InputCheckBoxEmpty" placeholder="">
                 </div>
 
-                <div class="form-group" data-depends="[{'input.checkboxes':{'type':'!empty'}}]">
+                <div class="form-group" data-dependency="[{'input.checkboxes':{'type':'!empty'}}]">
                     <label for="InputCheckBoxNotEmpty">Will Show on Checkbox (1 | 2 | 3) checked</label>
                     <input type="text" class="form-control" id="InputCheckBoxNotEmpty" placeholder="">
                 </div>
 
-                <div class="form-group" data-depends="[{'input.checkboxes':{'type':'equal', 'value':'option1'}}]">
+                <div class="form-group" data-dependency="[{'input.checkboxes':{'type':'equal', 'value':'option1'}}]">
                     <label for="InputCheckBoxEqual">Will Show on Checkbox ( 1 ) checked. Non Array</label>
                     <input type="text" class="form-control" id="InputCheckBoxEqual" placeholder="">
                 </div>
 
-                <div class="form-group" data-depends="[{'input.checkboxes':{'type':'equal', 'value':['option2','option3']}}]">
+                <div class="form-group" data-dependency="[{'input.checkboxes':{'type':'equal', 'value':['option2','option3']}}]">
                     <label for="InputCheckBoxEqualArray">Will Show on Checkbox (2 | 3) checked. Array</label>
                     <input type="text" class="form-control" id="InputCheckBoxEqualArray" placeholder="">
                 </div>
 
-                <div class="form-group" data-depends="[{'input.checkboxes':{'type':'equal', 'value':['option2','option3'], 'strict':true}}]">
+                <div class="form-group" data-dependency="[{'input.checkboxes':{'type':'equal', 'value':['option2','option3'], 'strict':true}}]">
                     <label for="InputCheckBoxEqualArrayMust">Will Show on Checkbox (2 & 3) checked. Array</label>
                     <input type="text" class="form-control" id="InputCheckBoxEqualArrayMust" placeholder="">
                 </div>
 
-                <div class="form-group" data-depends="[{'input.checkboxes':{'type':'!equal', 'value':'option2'}}]">
+                <div class="form-group" data-dependency="[{'input.checkboxes':{'type':'!equal', 'value':'option2'}}]">
                     <label for="InputCheckBoxNotEqual">Will Show on Checkbox (2) NOT checked.</label>
                     <input type="text" class="form-control" id="InputCheckBoxNotEqual" placeholder="">
                 </div>
 
-                <div class="form-group" data-depends="[{'input.checkboxes':{'type':'!equal', 'value':['option2','option3']}}]">
+                <div class="form-group" data-dependency="[{'input.checkboxes':{'type':'!equal', 'value':['option2','option3']}}]">
                     <label for="InputCheckBoxNotEqualArray">Will Show on Checkbox (2 | 3) NOT checked.</label>
                     <input type="text" class="form-control" id="InputCheckBoxNotEqualArray" placeholder="">
                 </div>
 
-                <div class="form-group" data-depends="[{'input.checkboxes':{'type':'!equal', 'value':['option2','option3'], 'strict':true}}]">
+                <div class="form-group" data-dependency="[{'input.checkboxes':{'type':'!equal', 'value':['option2','option3'], 'strict':true}}]">
                     <label for="InputCheckBoxNotEqualArrayStrict">Will Show on Checkbox (2 & 3) NOT checked.</label>
                     <input type="text" class="form-control" id="InputCheckBoxNotEqualArrayStrict" placeholder="">
                 </div>
--->
+
                 <div class="form-group radios">
                     <label class="radio-inline">
                         <input type="radio" class="radios" name="inlineRadioOptions" id="inlineRadio1" value="option1"> 1
@@ -212,37 +227,37 @@
                     </label>
                 </div>
 
-                <!--<div class="form-group" data-depends="[{'input.radios':{'type':'empty'}}]">
+                <div class="form-group" data-dependency="[{'input.radios':{'type':'empty'}}]">
                     <label for="InputRadioEmpty">Will Show on Radio (1 | 2 | 3) NOT checked</label>
                     <input type="text" class="form-control" id="InputRadioEmpty" placeholder="">
                 </div>
 
-                <div class="form-group" data-depends="[{'input.radios':{'type':'!empty'}}]">
+                <div class="form-group" data-dependency="[{'input.radios':{'type':'!empty'}}]">
                     <label for="InputRadioNotEmpty">Will Show on Radio (1 | 2 | 3) checked</label>
                     <input type="text" class="form-control" id="InputRadioNotEmpty" placeholder="">
                 </div>
 
-                <div class="form-group" data-depends="[{'input.radios':{'type':'equal', 'value':'option1'}}]">
+                <div class="form-group" data-dependency="[{'input.radios':{'type':'equal', 'value':'option1'}}]">
                     <label for="InputRadioEqual">Will Show on Radio ( 1 ) checked. Non Array</label>
                     <input type="text" class="form-control" id="InputRadioEqual" placeholder="">
                 </div>
 
-                <div class="form-group" data-depends="[{'input.radios':{'type':'equal', 'value':['option2','option3']}}]">
+                <div class="form-group" data-dependency="[{'input.radios':{'type':'equal', 'value':['option2','option3']}}]">
                     <label for="InputRadioEqualArray">Will Show on Radio (2 | 3) checked. Array</label>
                     <input type="text" class="form-control" id="InputRadioEqualArray" placeholder="">
                 </div>
 
-                <div class="form-group" data-depends="[{'input.radios':{'type':'!equal', 'value':'option2'}}]">
+                <div class="form-group" data-dependency="[{'input.radios':{'type':'!equal', 'value':'option2'}}]">
                     <label for="InputRadioNotEqual">Will Show on Radio (2) NOT checked.</label>
                     <input type="text" class="form-control" id="InputRadioNotEqual" placeholder="">
                 </div>
 
-                <div class="form-group" data-depends="[{'input.radios':{'type':'!equal', 'value':['option2','option3']}}]">
+                <div class="form-group" data-dependency="[{'input.radios':{'type':'!equal', 'value':['option2','option3']}}]">
                     <label for="InputRadioNotEqualArray">Will Show on Radio (2 | 3) NOT checked.</label>
                     <input type="text" class="form-control" id="InputRadioNotEqualArray" placeholder="">
                 </div>
--->
-                <div class="form-group" data-depends="[{'#InputSelectMulti':{'type':'!equal', 'value':['option1'], 'empty':false}}]">
+
+                <div class="form-group" data-dependency="[{'#InputSelectMulti':{'type':'!equal', 'value':['option1'], 'empty':false}}]">
                     <label for="InputRadioNotEqualArrayCheck">#InputEmail, input.checkboxes, input.radios, #InputSelectMulti Will Show on Radio checked value not equal Checkbox checked value.</label>
                     <input type="text" class="form-control" id="InputRadioNotEqualArrayCheck" placeholder="__">
                 </div>
@@ -256,7 +271,7 @@
                     </div>
                 </div>
 
-                <div class="form-group has-success has-feedback"  data-depends="[{'#InputAmount':{'type':'range', 'value':['50','100']}}]">
+                <div class="form-group has-success has-feedback" data-dependency="[{'#InputAmount':{'type':'range', 'value':['50','100']}}]">
                     <label class="control-label" for="inputGroupSuccess3">Will show if InputAmount value range 51-99</label>
                     <div class="input-group">
                         <span class="input-group-addon">@</span>
@@ -273,12 +288,12 @@
                     </div>
                     <div class="input-group">
                         <div class="input-group-addon">$</div>
-                        <input type="text" class="form-control" id="InputMaxAmount" placeholder="100">
+                        <input type="text" class="form-control" id="InputMaxAmountXX" placeholder="100">
                         <div class="input-group-addon">.00</div>
                     </div>
                 </div>
 
-                <div class="form-group has-success has-feedback"  data-depends="[{'#InputMinAmount':{'type':'compare', 'sign':'<=' ,'value':'20'},'#InputMaxAmount':{'type':'compare', 'sign':'>=' ,'value':'50'}}]">
+                <div class="form-group has-success has-feedback" data-dependency="[{'#InputMinAmount':{'type':'compare', 'sign':'>' ,'value':'20'},'#InputMaxAmountXX':{'type':'compare', 'sign':'<' ,'value':'50'}}]">
                     <label class="control-label" for="inputGroupSuccess">Will show if InputMinAmount value greater then 20 and InputMaxAmount value less then 50</label>
                     <div class="input-group">
                         <span class="input-group-addon">@</span>
@@ -312,12 +327,15 @@
                    '#exampleInputEmail3' : {'type':'regexp', 'pattern':'[a-z]+@[a-z]+.[a-z]+', 'modifier':'gi'},
 
                    '#exampleInputEmail3' : {'type':'compare', 'value':'100', 'sign':'>|<|<=|>=|=|=='},
-                   '#exampleInputEmail3' : {'type':'length', 'sign':'>', 'value':'100'},
+
+                   '#exampleInputEmail3' : {'type':'length', 'value':['10','100']},
+                   '#exampleInputEmail3' : {'type':'length', 'min':'100', 'max': '200'},
 
                    '#exampleInputEmail3' : {'type':'range', 'value':['10', '50']},
                    '#exampleInputEmail3' : {'type':'range', 'min':'10', 'max':'50']},
 
                }
                -->
+
 </body>
 </html>
