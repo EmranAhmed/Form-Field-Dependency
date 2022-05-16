@@ -27,7 +27,7 @@
         <header>
             <h1>Form-Field-Dependency</h1>
 
-            <h2>Simple Form Field Dependency. Conditional Form Fields.</h2>
+            <h2>Simple Form Field Dependency. Conditional Form Fields on the fly.</h2>
         </header>
 
         <section id="downloads" class="clearfix">
@@ -44,12 +44,12 @@
             <h3>Include jQuery</h3>
 
 
-            <pre>&lt;script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"&gt; &lt;/script&gt;</pre>
+            <pre>&lt;script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"&gt;&lt;/script&gt;</pre>
 
 
             <h3>Include Form-Field-Dependency</h3>
 
-            <pre>&lt;script type="text/javascript" src="https://raw.githubusercontent.com/EmranAhmed/Form-Field-Dependency/master/dependency.js"&gt; &lt;/script&gt;</pre>
+            <pre>&lt;script type="text/javascript" src="https://raw.githubusercontent.com/EmranAhmed/Form-Field-Dependency/master/dependency.js"&gt;&lt;/script&gt;</pre>
 
             <h3>Create your form components</h3>
 
@@ -93,20 +93,21 @@ jQuery(function ($) {
 
             <div class="types">
 
-                <p class="title-code"><code>empty</code></p>
+                <p class="title-code">
+                    <code>empty</code>
+                    <code>blank</code>
+                </p>
 
                 <p>Show dependency field if dependsOn field value is empty.</p>
 
-                <p><code>empty</code> type does not require any others attributes.</p>
+                <p><code>empty</code>, <code>blank</code> type does not require any others attributes.</p>
 
                 <h5>On attribute</h5>
                 <pre>data-dependency="[{'#DependsOnSelector' : {'type':'empty'}}]"</pre>
 
-
                 <p><strong>DependsOnSelector</strong> should be a input, checkbox, radio or select box</p>
 
                 <h5>Example Output:</h5>
-
 
                 <div class="form-group">
                     <label for="exampleInput1">Text Box</label>
@@ -133,12 +134,16 @@ jQuery(function ($) {
                 <hr>
             </div>
 
-
             <div class="types">
 
-                <p class="title-code"><code>!empty</code><code>notEmpty</code></p>
+                <p class="title-code">
+                    <code>!empty</code>
+                    <code>notEmpty</code>
+                    <code>not-empty</code>
+                    <code>notempty</code>
+                </p>
 
-                <p>Show Dependency field if DependsOn field value is not empty. </p>
+                <p>Show dependency field if DependsOn field value is not empty. </p>
 
                 <p>There is many alias of not empty type: <code>!empty</code>, <code>notEmpty</code>.</p>
 
@@ -149,7 +154,7 @@ jQuery(function ($) {
                 <pre>data-dependency="[{'#DependsOnSelector' : {'type':'empty'}}]"</pre>
 
 
-                <p><strong>DependsOnSelector</strong> should be a input, checkbox, radio or select box</p>
+                <p><strong>DependsOnSelector</strong> should be an input, checkbox, radio or select box</p>
 
                 <h5>Example Output:</h5>
 
@@ -180,13 +185,13 @@ jQuery(function ($) {
                 <hr>
             </div>
 
-
             <div class="types">
 
                 <p class="title-code">
                     <code>equal</code>
-                    <code>==</code>
                     <code>=</code>
+                    <code>==</code>
+                    <code>===</code>
                 </p>
 
                 <p>Show dependency field if dependsOn field value is equal to given value. </p>
@@ -332,17 +337,18 @@ jQuery(function ($) {
                     <code>!equal</code>
                     <code>!=</code>
                     <code>notEqual</code>
+                    <code>not-equal</code>
+                    <code>notequal</code>
                 </p>
 
                 <p>Show dependency field if dependsOn field value is not equal to given value. </p>
 
-                <p>There is many alias of not equal type: <code>!equal</code>, <code>!=</code>, <code>notEqual</code>.</p>
+                <p>There is many alias of not equal type: <code>!equal</code>,<code>!=</code>,<code>notEqual</code>,<code>not-equal</code>.</p>
 
                 <p>Define <code>value</code> in array or in string.</p>
 
                 <p>Checking type <code>strict</code> <code>true</code> to check strictly not equal or just not match
-                    anyone
-                    in array.</p>
+                    anyone in array.</p>
 
                 <p>Default <code>strict</code> value is <code>false</code></p>
 
@@ -464,14 +470,65 @@ jQuery(function ($) {
     &lt;/label&gt;
 &lt;/div&gt;
 
-&lt;div class=&quot;form-group&quot;
-     data-dependency=&quot;[{&apos;input.system4-checkboxes&apos;:{&apos;type&apos;:&apos;!equal&apos;, &apos;value&apos;:[&apos;option2&apos;,&apos;option3&apos;], &apos;strict&apos;:true}}]&quot;&gt;
+&lt;div class=&quot;form-group&quot; data-dependency=&quot;[{&apos;input.system4-checkboxes&apos;:{&apos;type&apos;:&apos;!equal&apos;, &apos;value&apos;:[&apos;option2&apos;,&apos;option3&apos;], &apos;strict&apos;:true}}]&quot;&gt;
     &lt;label for=&quot;exampleInput12&quot;&gt;Hide if system 2 and system 3 checked&lt;/label&gt;
     &lt;input type=&quot;email&quot; class=&quot;form-control&quot; id=&quot;exampleInput12&quot; placeholder=&quot;&quot;&gt;
 &lt;/div&gt;
 </pre>
                 <hr>
             </div>
+
+            <div class="types">
+
+                <p class="title-code">
+                    <code>regexp</code>
+                    <code>exp</code>
+                    <code>expression</code>
+                    <code>match</code>
+                </p>
+
+                <p>Show dependency field if dependsOn field value is match to given pattern. </p>
+
+                <p>There is many alias of <code>regexp</code> type: <code>regexp</code>,<code>exp</code>,<code>expression</code>,<code>match</code>.</p>
+
+                <p>Define <code>pattern</code> in string.</p>
+                <p>Define <code>modifier</code> in string. (Optional)</p>
+
+                <p>Default <code>modifier</code> value is <code>gi</code></p>
+
+
+                <h5>Code: on attribute. </h5>
+                <pre>data-dependency="[{'#DependsOnField' : {'type':'regexp', 'pattern':'[a-z]+@[a-z]+.[a-z]+'}}]"</pre>
+                <pre>data-dependency="[{'#DependsOnField' : {'type':'regexp', 'pattern':'[a-z]+@[a-z]+.[a-z]+', 'modifier':'gi'}}]"</pre>
+
+                <h5>Example:</h5>
+
+                <div class="form-group">
+                    <label for="exampleInputXX">A box will show email address is valid.</label>
+                    <input type="email" name="" class="form-control" id="exampleInputXX" placeholder="">
+                </div>
+
+                <div class="form-group"
+                     data-dependency="[{'#exampleInputXX':{'type':'regexp', 'pattern':'[a-z]+@[a-z]+.[a-z]+'}}]">
+                    <label for="exampleInputYY">Field</label>
+                    <input type="email" class="form-control" id="exampleInputYY" placeholder="Yes, email is valid">
+                </div>
+
+                <pre>
+&lt;div class="form-group"&gt;
+    &lt;label for="exampleInputXX"&gt;A box will show email address is valid.&lt;/label&gt;
+    &lt;input type="email" name="" class="form-control" id="exampleInputXX" placeholder=""&gt;
+&lt;/div&gt;
+
+&lt;div class="form-group"
+     data-dependency="[{'#exampleInputXX':{'type':'regexp', 'pattern':'[a-z]+@[a-z]+.[a-z]+'}}]"&gt;
+    &lt;label for="exampleInputYY"&gt;Field&lt;/label&gt;
+    &lt;input type="email" class="form-control" id="exampleInputYY" placeholder="Yes, email is valid"&gt;
+&lt;/div&gt;
+</pre>
+                <hr>
+            </div>
+
 
 
         </section>
@@ -491,23 +548,6 @@ jQuery(function ($) {
                     $(this).dependsOn()
                 });
             });
-        </script>
-        <script>
-            (function (i, s, o, g, r, a, m) {
-                i['GoogleAnalyticsObject'] = r;
-                i[r] = i[r] || function () {
-                    (i[r].q = i[r].q || []).push(arguments)
-                }, i[r].l = 1 * new Date();
-                a = s.createElement(o),
-                    m = s.getElementsByTagName(o)[0];
-                a.async = 1;
-                a.src   = g;
-                m.parentNode.insertBefore(a, m)
-            })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-            ga('create', 'UA-67018837-1', 'auto');
-            ga('send', 'pageview');
-
         </script>
 
     </div>
