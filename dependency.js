@@ -7,7 +7,7 @@
         return class {
 
             DEFAULTS = {
-                attribute : 'dependency',
+                attribute : 'data-dependency',
             }
 
             constructor(element, options = {}) {
@@ -19,12 +19,15 @@
 
             init() {
                 this.$element.addClass('has-dependency-data');
-                let conditionString = $(this.$element).data(this.settings.attribute.replace('data-', '').trim()).replace(/'/g, '"');
-                this.conditions     = JSON.parse(conditionString);
+
+                let attribute = this.settings.attribute.trim()
+
+                let conditionString = this.$element.attr(attribute).replace(/'/g, '"')
+
+                this.conditions = JSON.parse(conditionString);
 
                 let success = this.check();
                 this.showHide(success);
-
             }
 
             showHide(success) {
