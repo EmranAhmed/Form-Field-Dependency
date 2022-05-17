@@ -2,7 +2,7 @@
 
     'use strict'
 
-    const dependsOn = (($) => {
+    const Plugin = (($) => {
 
         return class {
 
@@ -399,7 +399,7 @@
 
     })(jQuery)
 
-    jQueryPlugin('dependsOn', dependsOn)
+    jQueryPlugin('dependsOn', Plugin)
 
 })(window);
 
