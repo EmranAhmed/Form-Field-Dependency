@@ -3,8 +3,11 @@
 })(jQuery)
 
 jQuery(function ($) {
-    $("[data-dependency]").each(function () {
+
+    $("[data-dependency]").dependsOn()
+
+    /*$("[data-dependency]").each(function () {
         $(this).dependsOn()
-    });
+    });*/
 
 })

@@ -1,3 +1,15 @@
+/**
+ * jQuery Form Field Dependency ( dependsOn ) JavaScript Library
+ * Version: 2.0.0
+ * Author: Emran Ahmed (emran.bd.08@gmail.com)
+ * Website: https://github.com/EmranAhmed/Form-Field-Dependency
+ * Docs: https://github.com/EmranAhmed/Form-Field-Dependency
+ * Repo: https://github.com/EmranAhmed/Form-Field-Dependency
+ * Issues: https://github.com/EmranAhmed/Form-Field-Dependency/issues
+ * Copyright OpenJS Foundation and other contributors
+ * Released under the MIT license
+ */
+
 (function (window) {
 
     'use strict'
@@ -33,9 +45,11 @@
             showHide(success) {
                 if (success) {
                     this.$element.removeClass('dependency-show').addClass('dependency-show')
+                    return true;
                 }
                 else {
                     this.$element.removeClass('dependency-show')
+                    return false;
                 }
             }
 
@@ -362,35 +376,35 @@
         return (PluginName, ClassName) => {
 
             $.fn[PluginName] = function (options, ...args) {
-                // return this.each((index, element) => {
+                return this.each((index, element) => {
 
-                let $element = $(this)
-                let data     = $element.data(PluginName)
+                    let $element = $(element)
+                    let data     = $element.data(PluginName)
 
-                if (!data) {
-                    data = new ClassName($element, $.extend({}, options))
-                    $element.data(PluginName, data)
-                }
-
-                if (typeof options === 'string') {
-
-                    if (typeof data[options] === 'object') {
-                        return data[options]
+                    if (!data) {
+                        data = new ClassName($element, $.extend({}, options))
+                        $element.data(PluginName, data)
                     }
 
-                    if (typeof data[options] === 'function') {
-                        return data[options](...args)
-                    }
-                }
+                    if (typeof options === 'string') {
 
-                return this
-                // })
+                        if (typeof data[options] === 'object') {
+                            return data[options]
+                        }
+
+                        if (typeof data[options] === 'function') {
+                            return data[options](...args)
+                        }
+                    }
+
+                    return this
+                })
             }
 
             // Constructor
             $.fn[PluginName].Constructor = ClassName
 
-            // Short hand
+            // Short Hand
             $[PluginName] = (options, ...args) => $({})[PluginName](options, ...args)
 
             // No Conflict
@@ -402,4 +416,3 @@
     jQueryPlugin('dependsOn', Plugin)
 
 })(window);
-
