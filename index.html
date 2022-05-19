@@ -9,9 +9,7 @@
     <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
 
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+
     <title>jQuery Form-Field-Dependency ($.dependsOn)</title>
     <style type="text/css">
         [data-dependency]:not(.dependency-show) {
@@ -49,7 +47,7 @@
 
             <h3>Include Form-Field-Dependency</h3>
 
-            <pre>&lt;script type="text/javascript" src="https://raw.githubusercontent.com/EmranAhmed/Form-Field-Dependency/master/dependency.js"&gt;&lt;/script&gt;</pre>
+            <pre>&lt;script type="text/javascript" src="https://cdn.jsdelivr.net/gh/EmranAhmed/Form-Field-Dependency@master/dependency.js"&gt;&lt;/script&gt;</pre>
 
             <h3>Create your form components</h3>
 
@@ -64,9 +62,7 @@
             <h3>Activate plugin</h3>
             <pre>
 jQuery(function ($) {
-    $("[data-dependency]").each(function () {
-        $(this).dependsOn()
-    });
+        $("[data-dependency]").dependsOn()
 });
 </pre>
 
@@ -530,7 +526,6 @@ jQuery(function ($) {
             </div>
 
 
-
         </section>
 
         <footer>
@@ -540,13 +535,11 @@ jQuery(function ($) {
 
 
         <script src="//code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="javascripts/form-field-dependency.js"></script>
+        <script src="//cdn.jsdelivr.net/gh/EmranAhmed/Form-Field-Dependency@master/dependency.js"></script>
 
         <script type="text/javascript">
             jQuery(function ($) {
-                $("[data-dependency]").each(function () {
-                    $(this).dependsOn()
-                });
+                $("[data-dependency]").dependsOn()
             });
         </script>
 
