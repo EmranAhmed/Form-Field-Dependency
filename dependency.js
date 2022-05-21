@@ -71,8 +71,8 @@
                 this.conditions.forEach((rules) => {
 
                     for (const [selector, rule] of Object.entries(rules)) {
-
-                        $(document.body).on('input.dependency', selector, (event) => {
+                        // @TODO: Some SelectBox like select2 doesn't trigger input event
+                        $(document.body).on('input.dependency change.dependency', selector, (event) => {
                             let success = this.check();
                             this.showHide(success);
                         })
