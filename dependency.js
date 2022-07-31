@@ -22,7 +22,8 @@
                 attribute : 'data-dependency',
             }
 
-            constructor(element, options = {}) {
+            constructor(element, options, name) {
+                this.name     = name
                 this.$element = $(element)
                 this.settings = $.extend(true, {}, this.DEFAULTS, options)
                 this.init();
@@ -84,7 +85,7 @@
 
                 let values = []
 
-                if (selector) {
+                if (selector && $(selector).length > 0) {
                     let inputType = $(selector).prop('type').toLowerCase()
 
                     let currentSelector = selector;
@@ -367,6 +368,10 @@
                 // $( document.body ).triggerHandler( 'depends-on',[selector, condition, this])
 
             }
+
+            destroy() {
+                this.$element.removeData(this.name)
+            }
         }
 
     })(jQuery)
@@ -382,7 +387,7 @@
                     let data     = $element.data(PluginName)
 
                     if (!data) {
-                        data = new ClassName($element, $.extend({}, options))
+                        data = new ClassName($element, $.extend({}, options), PluginName)
                         $element.data(PluginName, data)
                     }
 
